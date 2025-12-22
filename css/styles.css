@@ -1,0 +1,26 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+    background-image: url('/assets/img/logoHer.jpg');
+    background-size: cover;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.form-control,
+.form-select {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #ffc107;
+  box-shadow: none;
+}
+
+.btn-warning {
+  font-weight: bold;
+}
