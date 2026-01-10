@@ -154,3 +154,43 @@ function calcularHoraFin() {
 fechaInput.addEventListener("change", generarHorarios);
 servicioSelect.addEventListener("change", calcularHoraFin);
 horaInicioSelect.addEventListener("change", calcularHoraFin);
+
+
+// Trabajos por MP
+const form = document.getElementById("formTurno");
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  // Validar que todo esté completo
+  const nombre = form.querySelector('input[type="text"]').value.trim();
+  const telefono = form.querySelector('input[type="tel"]').value.trim();
+  const servicio = servicioSelect.value;
+  const barbero = form.querySelector('select:not(#servicio):not(#horaInicio)').value;
+  const fecha = fechaInput.value;
+  const horaInicio = horaInicioSelect.value;
+  const horaFin = horaFinSpan.textContent;
+
+  if (!nombre || !telefono || !servicio || !barbero || !fecha || !horaInicio) {
+    alert("Por favor completá todos los campos");
+    return;
+  }
+
+  // 👉 (Opcional) Guardar resumen del turno en localStorage
+  const resumen = {
+    nombre,
+    telefono,
+    servicio,
+    barbero,
+    fecha,
+    horaInicio,
+    horaFin
+  };
+  localStorage.setItem("turnoPendiente", JSON.stringify(resumen));
+
+  // 👉 Link de pago Mercado Pago
+  const LINK_MP = "https://mpago.la/2tFBbWH";
+
+  // Redirigir a Mercado Pago
+  window.location.href = LINK_MP;
+});
