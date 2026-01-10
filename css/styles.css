@@ -7,6 +7,13 @@ body {
 .card {
   border-radius: 12px;
 }
+.fondo-contenido{
+  margin-top: 20px;
+  background-color: rgba(115, 112, 112, 0.8);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
 
 .form-control,
 .form-select {
