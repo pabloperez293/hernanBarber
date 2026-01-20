@@ -11,7 +11,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
   if(user === USER && pass === PASS){
     // Guardamos sesión simple
     localStorage.setItem("auth", "true");
-    window.location.href = "/index.html";
+    window.location.href = "../index.html";
   } else {
     document.getElementById("error").textContent = "Usuario o contraseña incorrectos, contactarse con el admin.";
   }
