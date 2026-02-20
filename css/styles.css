@@ -1,33 +1,93 @@
-body {
-  font-family: 'Segoe UI', sans-serif;
-    background-image: url('/assets/img/logoHer.jpg');
-    background-size: cover;
+/* Paleta */
+:root {
+  --primary: #d4af37;
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #ffffff;
 }
 
-.card {
-  border-radius: 12px;
+/* Fondo */
+.bg-main {
+  background: var(--bg-main);
 }
-.fondo-contenido{
-  margin-top: 20px;
-  background-color: rgba(115, 112, 112, 0.8);
-  padding: 10px;
-  border-radius: 8px;
+
+.img-cristo-rey{
+  width: 100px;
+  margin: 0 auto;
+  display: block;
+  border-radius: 16px;
+}
+/* Cards */
+.card-custom {
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Calendario */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day {
+  padding: 12px;
   text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.form-control,
-.form-select {
-  background-color: #1a1a1a;
-  color: #fff;
-  border: 1px solid #444;
+.day:hover {
+  background: var(--primary);
+  color: black;
 }
 
-.form-control:focus,
-.form-select:focus {
-  border-color: #ffc107;
-  box-shadow: none;
+.day.disabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
-.btn-warning {
+.day.today {
+  border: 2px solid var(--primary);
+}
+
+.day.selected {
+  background: var(--primary);
+  color: black;
   font-weight: bold;
+}
+
+/* Horarios */
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.hora-btn {
+  padding: 10px;
+  border-radius: 10px;
+  background: #334155;
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.hora-btn:hover {
+  background: var(--primary);
+  color: black;
+}
+
+/* Animaciones */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
