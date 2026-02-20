@@ -3,16 +3,34 @@ const horariosContainer = document.getElementById("horarios");
 
 const hoy = new Date();
 let fechaSeleccionada = null;
-
 function generarCalendario() {
   calendar.innerHTML = "";
 
   const year = hoy.getFullYear();
   const month = hoy.getMonth();
 
-  const firstDay = new Date(year, month, 1).getDay();
+  const firstDate = new Date(year, month, 1);
   const lastDate = new Date(year, month + 1, 0).getDate();
 
+  // Ajustar para que la semana empiece en lunes
+  let firstDay = firstDate.getDay();
+  firstDay = firstDay === 0 ? 6 : firstDay - 1;
+
+  // 🔹 Header de días
+  const header = document.createElement("div");
+  header.classList.add("calendar-header");
+
+  const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+  diasSemana.forEach(dia => {
+    const div = document.createElement("div");
+    div.textContent = dia;
+    header.appendChild(div);
+  });
+
+  calendar.appendChild(header);
+
+  // 🔹 Grid de días
   const grid = document.createElement("div");
   grid.classList.add("calendar-grid");
 
@@ -28,7 +46,10 @@ function generarCalendario() {
     dayDiv.textContent = day;
     dayDiv.classList.add("day");
 
-    if (fecha < new Date().setHours(0,0,0,0)) {
+    const hoySinHora = new Date();
+    hoySinHora.setHours(0,0,0,0);
+
+    if (fecha < hoySinHora) {
       dayDiv.classList.add("disabled");
     }
 
@@ -49,6 +70,7 @@ function generarCalendario() {
   calendar.appendChild(grid);
 }
 
+// Generador de horarios 
 function generarHorarios(fecha) {
   horariosContainer.innerHTML = "";
 
