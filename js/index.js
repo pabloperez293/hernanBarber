@@ -1,67 +1,120 @@
+document.addEventListener("DOMContentLoaded", function() {
+
+// ELEMENTOS
 const calendar = document.getElementById("calendar");
+const monthLabel = document.getElementById("monthLabel");
+const prevBtn = document.getElementById("prevMonth");
+const nextBtn = document.getElementById("nextMonth");
 const horariosContainer = document.getElementById("horarios");
 
-const hoy = new Date();
+const servicioSelect = document.getElementById("servicioSelect");
+
+const resServicio = document.getElementById("resServicio");
+const resFecha = document.getElementById("resFecha");
+const resHora = document.getElementById("resHora");
+const resPrecio = document.getElementById("resPrecio");
+const btnConfirmar = document.getElementById("btnConfirmar");
+
+// VARIABLES
+let fechaActual = new Date();
+let mesActual = fechaActual.getMonth();
+let añoActual = fechaActual.getFullYear();
+
+let servicioSeleccionado = null;
 let fechaSeleccionada = null;
+let horaSeleccionada = null;
+
+const PRECIOS = {
+  corte: 4000,
+  barba: 3000,
+  "corte-barba": 6000,
+  claritos: 12000
+};
+
+const meses = [
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+];
+
+// ================= SERVICIO =================
+
+servicioSelect.addEventListener("change", () => {
+
+  servicioSeleccionado = servicioSelect.value;
+
+  if (servicioSeleccionado) {
+    resServicio.textContent =
+      servicioSelect.options[servicioSelect.selectedIndex].text;
+
+    resPrecio.textContent = "$" + PRECIOS[servicioSeleccionado];
+  } else {
+    resServicio.textContent = "-";
+    resPrecio.textContent = "$0";
+  }
+
+  validarConfirmacion();
+});
+
+// ================= CALENDARIO =================
+
 function generarCalendario() {
+
   calendar.innerHTML = "";
 
-  const year = hoy.getFullYear();
-  const month = hoy.getMonth();
+  monthLabel.textContent = `${meses[mesActual]} ${añoActual}`;
 
-  const firstDate = new Date(year, month, 1);
-  const lastDate = new Date(year, month + 1, 0).getDate();
+  const firstDate = new Date(añoActual, mesActual, 1);
+  const lastDate = new Date(añoActual, mesActual + 1, 0).getDate();
 
-  // Ajustar para que la semana empiece en lunes
   let firstDay = firstDate.getDay();
   firstDay = firstDay === 0 ? 6 : firstDay - 1;
 
-  // 🔹 Header de días
   const header = document.createElement("div");
   header.classList.add("calendar-header");
 
-  const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-
-  diasSemana.forEach(dia => {
+  ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"].forEach(d => {
     const div = document.createElement("div");
-    div.textContent = dia;
+    div.textContent = d;
     header.appendChild(div);
   });
 
   calendar.appendChild(header);
 
-  // 🔹 Grid de días
   const grid = document.createElement("div");
   grid.classList.add("calendar-grid");
 
-  // Espacios vacíos antes del primer día
   for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
-    grid.appendChild(empty);
+    grid.appendChild(document.createElement("div"));
   }
 
   for (let day = 1; day <= lastDate; day++) {
-    const fecha = new Date(year, month, day);
+
+    const fecha = new Date(añoActual, mesActual, day);
     const dayDiv = document.createElement("div");
     dayDiv.textContent = day;
     dayDiv.classList.add("day");
 
-    const hoySinHora = new Date();
-    hoySinHora.setHours(0,0,0,0);
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
 
-    if (fecha < hoySinHora) {
+    if (fecha < hoy) {
       dayDiv.classList.add("disabled");
     }
 
-    if (day === hoy.getDate()) {
-      dayDiv.classList.add("today");
-    }
-
     dayDiv.addEventListener("click", () => {
-      document.querySelectorAll(".day").forEach(d => d.classList.remove("selected"));
+
+      if (dayDiv.classList.contains("disabled")) return;
+
+      document.querySelectorAll(".day")
+        .forEach(d => d.classList.remove("selected"));
+
       dayDiv.classList.add("selected");
+
       fechaSeleccionada = fecha;
-      generarHorarios(fechaSeleccionada);
+      resFecha.textContent = fecha.toLocaleDateString("es-AR");
+
+      generarHorarios(fecha);
+      validarConfirmacion();
     });
 
     grid.appendChild(dayDiv);
@@ -70,46 +123,99 @@ function generarCalendario() {
   calendar.appendChild(grid);
 }
 
-// Generador de horarios 
+// ================= HORARIOS =================
+
 function generarHorarios(fecha) {
+
   horariosContainer.innerHTML = "";
 
-  const ahora = new Date();
-  const horaActual = ahora.getHours() * 60 + ahora.getMinutes();
+  let inicioMin = 9 * 60;
+  const cierreMin = 20 * 60;
 
-  for (let h = 9; h < 20; h++) {
-    for (let m = 0; m < 60; m += 30) {
+  for (let min = inicioMin; min < cierreMin; min += 30) {
 
-      const totalMin = h * 60 + m;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
 
-      if (
-        fecha.toDateString() === ahora.toDateString() &&
-        totalMin <= horaActual
-      ) continue;
+    const horaTexto =
+      String(h).padStart(2, "0") +
+      ":" +
+      String(m).padStart(2, "0");
 
-      const horaTexto =
-        String(h).padStart(2, "0") +
-        ":" +
-        String(m).padStart(2, "0");
+    const btn = document.createElement("button");
+    btn.classList.add("hora-btn");
+    btn.textContent = horaTexto;
 
-      const btn = document.createElement("button");
-      btn.classList.add("hora-btn");
-      btn.textContent = horaTexto;
+    btn.addEventListener("click", () => {
 
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".hora-btn").forEach(b => b.classList.remove("selected"));
-        btn.classList.add("selected");
-      });
+      document.querySelectorAll(".hora-btn")
+        .forEach(b => b.classList.remove("selected"));
 
-      horariosContainer.appendChild(btn);
-    }
+      btn.classList.add("selected");
+
+      horaSeleccionada = horaTexto;
+      resHora.textContent = horaTexto;
+
+      validarConfirmacion();
+    });
+
+    horariosContainer.appendChild(btn);
   }
 }
 
+// ================= VALIDACIÓN =================
+
+function validarConfirmacion() {
+  btnConfirmar.disabled = !(servicioSeleccionado && fechaSeleccionada && horaSeleccionada);
+}
+
+// ================= CAMBIO MES =================
+
+prevBtn.addEventListener("click", () => {
+  const hoy = new Date();
+
+  // Si estamos en el mes actual , no permitir retroceder a meses anteriores
+
+  if( mesActual === hoy.getMonth() && 
+      añoActual === hoy.getFullYear() ) {
+    return;
+  } 
+
+  mesActual--;
+  if (mesActual < 0) {
+    mesActual = 11;
+    añoActual--;
+  }
+  generarCalendario();
+});
+
+nextBtn.addEventListener("click", () => {
+  mesActual++;
+  if (mesActual > 11) {
+    mesActual = 0;
+    añoActual++;
+  }
+  generarCalendario();
+
+  const hoyReal = new Date();
+
+  if ( mesActual === hoyReal.getMonth() &&
+        añoActual === hoyReal.getFullYear() 
+      ) {
+        prevBtn.disabled = true;
+        prevBtn.style.opacity = "0.5";
+      } else {
+        prevBtn.disabled = false;
+        prevBtn.style.opacity = "1";
+      }
+});
+
+// INICIO
 generarCalendario();
 
+});
+// ================= SCROLL ANIMATION =================
 
-// Scroll 
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {

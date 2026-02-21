@@ -33,12 +33,34 @@
       Reservar Turno
     </h2>
 
+<div class="mb-4 fade-in">
+  <div class="card-custom p-4">
+    <h4 class="mb-4 text-warning">Seleccionar Servicio</h4>
+
+    <select id="servicioSelect" class="form-select">
+      <option value="">Elegir servicio</option>
+      <option value="corte">Corte</option>
+      <option value="barba">Barba</option>
+      <option value="corte-barba">Corte + Barba</option>
+      <option value="claritos">Claritos</option>
+    </select>
+  </div>
+</div>
+
     <div class="row g-4 align-items-start">
 
       <!-- 📅 Calendario -->
       <div class="col-lg-6 fade-in">
+
         <div class="card-custom p-4">
           <h4 class="mb-4 text-warning">Seleccionar Fecha</h4>
+          <div class="calendar-top">
+<!-- fechas del calendario -->
+          <button id="prevMonth">‹</button>
+          <h4 id="monthLabel"></h4>
+          <button id="nextMonth">›</button>
+          </div>
+
           <div id="calendar"></div>
         </div>
       </div>
@@ -53,6 +75,24 @@
 
     </div>
   </div>
+</div>
+
+<div class="resumen-box fade-in">
+  <h4>Resumen de turno</h4>
+
+  <p><strong>Servicio:</strong> <span id="resServicio">-</span></p>
+  <p><strong>Fecha:</strong> <span id="resFecha">-</span></p>
+  <p><strong>Horario:</strong> <span id="resHora">-</span></p>
+
+  <hr>
+
+  <p class="precio-total">
+    Total: <span id="resPrecio">$0</span>
+  </p>
+
+  <button id="btnConfirmar" class="btn-confirmar" disabled>
+    Confirmar turno
+  </button>
 </div>
 
 
