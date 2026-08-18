@@ -1,9 +1,6 @@
 import { useState } from "react";
-// Eliminá la importación de Instagram desde lucide-react
-import { FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
-
+import { FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa6";
 import { FiMenu, FiX } from "react-icons/fi";
-// Usalo en tu componente como <FaInstagram />
 import logo from "../../assets/jr.jpg";
 
 const navLinks = [
@@ -27,24 +24,25 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0B0B0B]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-7xl item center justify-between px-4 sm:px-6 lg:px-8">
-        {/*Logo*/}
+      {/* CORREGIDO: items-center alinea todos los elementos verticalmente al centro */}
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        
+        {/* LOGO */}
         <a
-          href="inicio"
+          href="#inicio"
           className="flex items-center gap-3"
           onClick={handleMenuClick}
         >
           <img
-            src={"../src/assets/jr.jpg"}
-            alt="elambarberstudio"
-            className="h-12 w-12 rounded-full object-cover border border-[#DDC88A]/4"
+            src={logo}
+            alt="ElamBarberStudio"
+            className="h-12 w-12 rounded-full border border-[#DDC88A]/40 object-cover"
           />
 
           <div className="hidden sm:block">
             <span className="block text-sm font-semibold tracking-[0.25em] text-[#DDC88A]">
               Elambar
             </span>
-
             <span className="block text-xs tracking-[0.35em] text-white">
               berstudio
             </span>
@@ -65,7 +63,6 @@ export default function Navbar() {
               "
             >
               {link.label}
-
               <span
                 className="
                   absolute -bottom-2 left-0 h-[1px] w-0
@@ -93,20 +90,21 @@ export default function Navbar() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="WhatsApp de Elambarber"
+            aria-label="WhatsApp de ElamBarber"
             className="text-gray-300 transition-colors duration-300 hover:text-[#DDC88A]"
           >
             <FaWhatsapp className="h-5 w-5" />
           </a>
 
-                    <a
-            href={whatsappUrl}
+          {/* TIKTOK */}
+          <a
+            href="https://www.tiktok.com/@elambarberstudio"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="WhatsApp de Elambarber"
+            aria-label="TikTok de ElamBarber"
             className="text-gray-300 transition-colors duration-300 hover:text-[#DDC88A]"
           >
-              <FaTiktok className="h-5 w-5" />{" "}
+            <FaTiktok className="h-5 w-5" />
           </a>
 
           {/* CTA */}
@@ -129,7 +127,7 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* MOBILE BUTTON */}
+        {/* MOBILE BUTTON (Perfectamente centrado verticalmente con items-center en el padre) */}
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -182,15 +180,16 @@ export default function Navbar() {
             </a>
           ))}
 
-          <div className="flex items-center gap-5 border-t border-white/10 pt-5">
+          {/* ICONOS SOCIALES AGRUPADOS */}
+          <div className="flex items-center gap-6 border-t border-white/10 pt-5">
             <a
               href="https://www.instagram.com/elambarberstudio/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Instagram de Elambarber"
+              aria-label="Instagram de ElamBarber"
               className="text-gray-300 transition-colors hover:text-[#DDC88A]"
             >
-              <FaInstagram className="h-5 w-5" />{" "}
+              <FaInstagram className="h-5 w-5" />
             </a>
 
             <a
@@ -200,18 +199,17 @@ export default function Navbar() {
               aria-label="WhatsApp de ElamBarber"
               className="text-gray-300 transition-colors hover:text-[#DDC88A]"
             >
-              <FaWhatsapp className="h-5 w-5" />{" "}
+              <FaWhatsapp className="h-5 w-5" />
             </a>
-          </div>
-<div className="flex items-center gap-5 border-t border-white/10 pt-5">
+
             <a
               href="https://www.tiktok.com/@elambarberstudio"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Tiktok de ElamBarber"
+              aria-label="TikTok de ElamBarber"
               className="text-gray-300 transition-colors hover:text-[#DDC88A]"
             >
-              <FaTiktok className="h-5 w-5" />{" "}
+              <FaTiktok className="h-5 w-5" />
             </a>
           </div>
 
@@ -230,7 +228,7 @@ export default function Navbar() {
               hover:bg-[#e6d49b]
             "
           >
-            Reservar 
+            Reservar turno
           </a>
         </div>
       </div>
