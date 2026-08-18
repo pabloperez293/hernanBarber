@@ -32,7 +32,7 @@ export default function Location() {
           </p>
 
           <a
-            href="https://www.google.com/maps/"
+            href="https://maps.app.goo.gl/cq77NnQgJqummKU66"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#DDC88A] px-6 py-3 text-sm font-bold text-[#0B0B0B] transition-all duration-300 hover:scale-105 hover:bg-[#e8d9a8]"

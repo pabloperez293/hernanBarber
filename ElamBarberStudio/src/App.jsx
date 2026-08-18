@@ -6,6 +6,7 @@ import "./index.css";
 import Hero from "./components/home/Hero";
 import Location from "./components/home/Location";
 import Footer from "./components/layout/Footer";
+import Services from "./components/home/Services";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Navbar />
       <main >
         <Hero />
+        <Services />
 
         <Location />
 
