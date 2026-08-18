@@ -1,26 +1,21 @@
-// src/App.jsx
-import React from "react";
-import BookingStepper from "./components/client/BookingStepper";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/layout/Navbar";
-import "./index.css";
 import Hero from "./components/home/Hero";
+import Services from "./components/home/Services";
 import Location from "./components/home/Location";
 import Footer from "./components/layout/Footer";
-import Services from "./components/home/Services";
+import BookingStepper from "./components/client/BookingStepper";
 
-function App() {
+function Home() {
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white">
       <Navbar />
-      <main >
+
+      <main>
         <Hero />
         <Services />
-
         <Location />
-
-        <section id="turnos" className="px-4">
-        <BookingStepper />
-        </section>        
       </main>
 
       <Footer />
@@ -28,4 +23,27 @@ function App() {
   );
 }
 
-export default App;
+function Booking() {
+  return (
+    <div className="min-h-screen bg-[#0B0B0B] text-white">
+      <Navbar />
+
+      <main>
+        <BookingStepper />
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/reservar" element={<Booking />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

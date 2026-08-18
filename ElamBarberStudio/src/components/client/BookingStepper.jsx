@@ -1,334 +1,693 @@
 // src/components/client/BookingStepper.jsx
-import React, { useState, useEffect } from "react";
-import { SERVICES_MOCK } from "../../data/mockData";
+
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
 import {
-  getDateRangeLimits,
-  getAvailableTimeSlots,
+  FaArrowLeft,
+  FaCalendarAlt,
+  FaCheck,
+  FaCheckCircle,
+  FaClock,
+  FaPhone,
+  FaUser,
+  FaWhatsapp,
+} from "react-icons/fa";
+import { FaScissors } from "react-icons/fa6";
+
+import { SERVICES_MOCK } from "../../data/mockData";
+
+import {
   calculateEndTime,
+  getAvailableTimeSlots,
+  getDateRangeLimits,
   sanitizePhoneNumber,
 } from "../../utils/bookingUtils";
-import {
-  Calendar,
-  Clock,
-  User,
-  Phone,
-  CheckCircle,
-  ArrowLeft,
-  Scissors,
-} from "lucide-react";
+
+const STEPS = [
+  {
+    number: 1,
+    title: "Fecha y hora",
+  },
+  {
+    number: 2,
+    title: "Tus datos",
+  },
+  {
+    number: 3,
+    title: "Confirmación",
+  },
+];
+
+const formatPrice = (price) => {
+  return new Intl.NumberFormat("es-AR").format(price);
+};
 
 export default function BookingStepper() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // Servicio seleccionado desde /reservar?service=ID
+  const serviceId = Number(searchParams.get("service"));
+
+  const selectedService = SERVICES_MOCK.find(
+    (service) => service.id === serviceId
+  );
+
+  // Paso actual
   const [step, setStep] = useState(1);
 
-  // Estados de la reserva
-  const [selectedService, setSelectedService] = useState(null);
+  // Datos de la reserva
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
 
-  // Fechas límites para el calendario
+  // Fechas permitidas
   const { minDate, maxDate } = getDateRangeLimits();
 
-  // Inicializar la fecha por defecto en hoy
+  // Inicializar fecha en hoy
   useEffect(() => {
     setSelectedDate(minDate);
   }, [minDate]);
 
-  // Lista de horarios disponibles según fecha y servicio
+  // Horarios disponibles según servicio + fecha
   const availableSlots =
     selectedService && selectedDate
-      ? getAvailableTimeSlots(selectedDate, selectedService.durationMinutes)
+      ? getAvailableTimeSlots(
+          selectedDate,
+          selectedService.durationMinutes
+        )
       : [];
 
-  // Resetear hora elegida si cambia la fecha o el servicio
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
+  // Cambiar fecha
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
     setSelectedTime("");
   };
 
-  const handleServiceSelect = (service) => {
-    setSelectedService(service);
-    setSelectedTime("");
-    setStep(2);
-  };
-
-  // Sanitización de teléfono en vivo (solo números)
-  const handlePhoneChange = (e) => {
-    const cleanValue = sanitizePhoneNumber(e.target.value);
+  // Cambiar teléfono
+  const handlePhoneChange = (event) => {
+    const cleanValue = sanitizePhoneNumber(event.target.value);
     setClientPhone(cleanValue);
   };
 
-  // Generación de link de WhatsApp para confirmación instantánea
+  // Avanzar de paso
+  const handleNextStep = () => {
+    setStep((currentStep) => Math.min(currentStep + 1, 3));
+  };
+
+  // Volver de paso
+  const handlePreviousStep = () => {
+    setStep((currentStep) => Math.max(currentStep - 1, 1));
+  };
+
+  // WhatsApp
   const getWhatsAppLink = () => {
-    const phoneNumber = "5491112345678"; // Reemplazar por el WhatsApp del barbero Hernán
+    const phoneNumber = "5491112345678";
+
     const endTime = calculateEndTime(
       selectedTime,
-      selectedService.durationMinutes,
+      selectedService.durationMinutes
     );
+
     const text =
-      `¡Hola Hernán! Quiero confirmar mi turno:\n\n` +
-      `✂️ *Servicio:* ${selectedService.name}\n` +
-      `📅 *Fecha:* ${selectedDate}\n` +
-      `⏰ *Horario:* ${selectedTime} a ${endTime} hs\n` +
-      `👤 *Nombre:* ${clientName}\n` +
-      `📞 *Teléfono:* ${clientPhone}\n\n` +
+      `¡Hola Elam Barber Studio! Quiero confirmar mi turno:\n\n` +
+      `✂️ Servicio: ${selectedService.name}\n` +
+      `📅 Fecha: ${selectedDate}\n` +
+      `⏰ Horario: ${selectedTime} a ${endTime} hs\n` +
+      `👤 Nombre: ${clientName}\n` +
+      `📞 Teléfono: ${clientPhone}\n\n` +
       `¡Muchas gracias!`;
 
     return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
   };
 
-  return (
-    <div className="max-w-2xl mx-auto bg-slate-900 text-slate-100 rounded-2xl shadow-2xl overflow-hidden border border-slate-800 my-8 p-6">
-      {/* Encabezado e Identidad */}
-      <div className="text-center mb-8 border-b border-slate-800 pb-6">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 mb-3">
-          <Scissors className="w-6 h-6" />
+  // Si entraron a /reservar sin servicio
+  if (!selectedService) {
+    return (
+      <section className="min-h-screen bg-[#0B0B0B] px-6 py-32 text-center text-white">
+        <div className="mx-auto max-w-xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#DDC88A]">
+            Elam Barber Studio
+          </p>
+
+          <h1 className="mt-5 text-3xl font-semibold sm:text-4xl">
+            Primero elegí un servicio
+          </h1>
+
+          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-white/50">
+            Seleccioná el servicio que querés realizarte para poder reservar
+            tu turno.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => navigate("/#servicios")}
+            className="
+              mt-8
+              rounded-full
+              bg-[#DDC88A]
+              px-6 py-3
+              text-sm font-bold
+              text-[#0B0B0B]
+              transition-all duration-300
+              hover:scale-105
+              hover:bg-[#E8D9A8]
+            "
+          >
+            Ver servicios
+          </button>
         </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white">
-           <span className="block font-semibold  text-[#DDC88A]">
-              Elambarberstudio
-            </span>
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Reserva tu turno en simples pasos
+      </section>
+    );
+  }
+
+  return (
+    <section
+      id="reservar"
+      className="min-h-screen bg-[#0B0B0B] px-4 py-20 text-white sm:px-6"
+    >
+      <div className="mx-auto max-w-5xl">
+
+        {/* ENCABEZADO */}
+        <div className="mb-10 text-center">
+          <span className="text-xs font-semibold uppercase tracking-[0.4em] text-[#DDC88A]">
+            Elam Barber Studio
+          </span>
+
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
+            Reservá tu turno
+          </h1>
+
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-white/50 sm:text-base">
+            Elegí el horario que mejor te quede y completá tus datos para
+            confirmar tu visita.
+          </p>
+        </div>
+
+        {/* CONTENEDOR */}
+        <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] shadow-2xl shadow-black/30">
+
+          {/* SERVICIO SELECCIONADO */}
+          <div className="border-b border-white/10 p-5 sm:p-8">
+            <div className="rounded-2xl border border-[#DDC88A]/20 bg-[#DDC88A]/5 p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-[#DDC88A]/70">
+                    Servicio seleccionado
+                  </p>
+
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#DDC88A]/10 text-[#DDC88A]">
+                      <FaScissors />
+                    </div>
+
+                    <div>
+                      <h2 className="text-xl font-semibold">
+                        {selectedService.name}
+                      </h2>
+
+                      <p className="text-sm text-white/40">
+                        {selectedService.durationMinutes} minutos
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-2xl font-semibold text-[#DDC88A]">
+                  ${formatPrice(selectedService.price)}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate("/#servicios")}
+                className="mt-4 text-xs text-white/40 transition-colors hover:text-[#DDC88A]"
+              >
+                Cambiar servicio
+              </button>
+            </div>
+          </div>
+
+          {/* STEPPER */}
+          <div className="border-b border-white/10 px-5 py-6 sm:px-8">
+            <div className="mx-auto flex max-w-2xl items-center justify-between">
+
+              {STEPS.map((item, index) => {
+                const isActive = step === item.number;
+                const isCompleted = step > item.number;
+
+                return (
+                  <div
+                    key={item.number}
+                    className="flex min-w-0 flex-1 items-center"
+                  >
+                    <div className="flex min-w-0 flex-col items-center">
+                      <div
+                        className={`
+                          flex h-11 w-11 items-center justify-center
+                          rounded-full border
+                          text-sm font-bold
+                          transition-all duration-300
+                          ${
+                            isCompleted
+                              ? "border-[#DDC88A] bg-[#DDC88A] text-[#0B0B0B]"
+                              : isActive
+                                ? "border-[#DDC88A] bg-[#DDC88A]/10 text-[#DDC88A]"
+                                : "border-white/10 bg-white/[0.03] text-white/30"
+                          }
+                        `}
+                      >
+                        {isCompleted ? <FaCheck /> : item.number}
+                      </div>
+
+                      <span
+                        className={`
+                          mt-2 hidden text-[10px] font-semibold uppercase tracking-wider sm:block
+                          ${
+                            isActive || isCompleted
+                              ? "text-[#DDC88A]"
+                              : "text-white/30"
+                          }
+                        `}
+                      >
+                        {item.title}
+                      </span>
+                    </div>
+
+                    {index < STEPS.length - 1 && (
+                      <div
+                        className={`
+                          mx-3 h-px flex-1 transition-colors duration-500
+                          ${
+                            step > item.number
+                              ? "bg-[#DDC88A]"
+                              : "bg-white/10"
+                          }
+                        `}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CONTENIDO */}
+          <div className="p-5 sm:p-8 lg:p-10">
+
+            {/* PASO 1 - FECHA Y HORA */}
+            {step === 1 && (
+              <div>
+                <div className="mb-8">
+                  <span className="text-xs uppercase tracking-[0.3em] text-[#DDC88A]">
+                    Paso 1
+                  </span>
+
+                  <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+                    Elegí fecha y hora
+                  </h2>
+
+                  <p className="mt-2 text-sm text-white/50">
+                    Buscá el horario que mejor se adapte a vos.
+                  </p>
+                </div>
+
+                {/* FECHA */}
+                <div className="mb-8">
+                  <label
+                    htmlFor="booking-date"
+                    className="mb-3 block text-sm font-medium text-white/70"
+                  >
+                    Fecha del turno
+                  </label>
+
+                  <div className="relative">
+                    <FaCalendarAlt className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#DDC88A]" />
+
+                    <input
+                      id="booking-date"
+                      type="date"
+                      min={minDate}
+                      max={maxDate}
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      className="
+                        w-full rounded-xl border border-white/10
+                        bg-[#111111]
+                        py-3 pl-11 pr-4
+                        text-white
+                        outline-none
+                        transition-colors
+                        focus:border-[#DDC88A]/60
+                      "
+                    />
+                  </div>
+
+                  <p className="mt-2 text-xs text-white/30">
+                    Disponible desde hoy hasta el último día del mes actual.
+                  </p>
+                </div>
+
+                {/* HORARIOS */}
+                <div>
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-sm font-medium text-white/70">
+                      Horarios disponibles
+                    </span>
+
+                    <span className="text-xs text-white/30">
+                      {availableSlots.length} disponibles
+                    </span>
+                  </div>
+
+                  {availableSlots.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+                      {availableSlots.map((time) => {
+                        const isSelected = selectedTime === time;
+
+                        return (
+                          <button
+                            key={time}
+                            type="button"
+                            onClick={() => setSelectedTime(time)}
+                            className={`
+                              rounded-xl border px-3 py-3 text-sm font-semibold
+                              transition-all duration-300
+                              ${
+                                isSelected
+                                  ? "border-[#DDC88A] bg-[#DDC88A] text-[#0B0B0B]"
+                                  : "border-white/10 bg-white/[0.03] text-white/70 hover:border-[#DDC88A]/40 hover:text-[#DDC88A]"
+                              }
+                            `}
+                          >
+                            {time}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-[#DDC88A]/20 bg-[#DDC88A]/5 p-6 text-center">
+                      <FaClock className="mx-auto text-2xl text-[#DDC88A]" />
+
+                      <p className="mt-3 text-sm font-medium text-white">
+                        No hay horarios disponibles
+                      </p>
+
+                      <p className="mt-1 text-xs text-white/40">
+                        Probá con otra fecha.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={!selectedTime}
+                  onClick={handleNextStep}
+                  className="
+                    mt-8
+                    w-full
+                    rounded-xl
+                    bg-[#DDC88A]
+                    px-5 py-4
+                    text-sm font-bold
+                    text-[#0B0B0B]
+                    transition-all duration-300
+                    hover:bg-[#E8D9A8]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-30
+                  "
+                >
+                  Continuar
+                </button>
+              </div>
+            )}
+
+            {/* PASO 2 - DATOS */}
+            {step === 2 && (
+              <div>
+                <button
+                  type="button"
+                  onClick={handlePreviousStep}
+                  className="mb-8 inline-flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-[#DDC88A]"
+                >
+                  <FaArrowLeft />
+                  Volver
+                </button>
+
+                <div className="mb-8">
+                  <span className="text-xs uppercase tracking-[0.3em] text-[#DDC88A]">
+                    Paso 2
+                  </span>
+
+                  <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+                    Completá tus datos
+                  </h2>
+
+                  <p className="mt-2 text-sm text-white/50">
+                    Los necesitamos para confirmar tu turno.
+                  </p>
+                </div>
+
+                {/* DATOS */}
+                <div className="space-y-5">
+                  <div>
+                    <label
+                      htmlFor="client-name"
+                      className="mb-2 block text-sm font-medium text-white/70"
+                    >
+                      Nombre completo
+                    </label>
+
+                    <div className="relative">
+                      <FaUser className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+
+                      <input
+                        id="client-name"
+                        type="text"
+                        placeholder="Ej: Matías"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        className="
+                          w-full rounded-xl border border-white/10
+                          bg-[#111111]
+                          py-3 pl-11 pr-4
+                          text-white
+                          outline-none
+                          placeholder:text-white/20
+                          focus:border-[#DDC88A]/60
+                        "
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="client-phone"
+                      className="mb-2 block text-sm font-medium text-white/70"
+                    >
+                      Teléfono / WhatsApp
+                    </label>
+
+                    <div className="relative">
+                      <FaPhone className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+
+                      <input
+                        id="client-phone"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Ej: 1123456789"
+                        value={clientPhone}
+                        onChange={handlePhoneChange}
+                        className="
+                          w-full rounded-xl border border-white/10
+                          bg-[#111111]
+                          py-3 pl-11 pr-4
+                          text-white
+                          outline-none
+                          placeholder:text-white/20
+                          focus:border-[#DDC88A]/60
+                        "
+                      />
+                    </div>
+
+                    <p className="mt-2 text-xs text-white/30">
+                      Solo números.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={
+                    !clientName.trim() ||
+                    clientPhone.length < 8
+                  }
+                  onClick={handleNextStep}
+                  className="
+                    mt-8
+                    w-full
+                    rounded-xl
+                    bg-[#DDC88A]
+                    px-5 py-4
+                    text-sm font-bold
+                    text-[#0B0B0B]
+                    transition-all duration-300
+                    hover:bg-[#E8D9A8]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-30
+                  "
+                >
+                  Revisar reserva
+                </button>
+              </div>
+            )}
+
+            {/* PASO 3 - CONFIRMACIÓN */}
+            {step === 3 && (
+              <div>
+                <button
+                  type="button"
+                  onClick={handlePreviousStep}
+                  className="mb-8 inline-flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-[#DDC88A]"
+                >
+                  <FaArrowLeft />
+                  Volver
+                </button>
+
+                <div className="mb-8">
+                  <span className="text-xs uppercase tracking-[0.3em] text-[#DDC88A]">
+                    Paso 3
+                  </span>
+
+                  <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+                    Revisá tu reserva
+                  </h2>
+
+                  <p className="mt-2 text-sm text-white/50">
+                    Confirmá que todos los datos sean correctos.
+                  </p>
+                </div>
+
+                {/* RESUMEN */}
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-[0.25em] text-white/40">
+                      Tu reserva
+                    </span>
+
+                    <FaCheckCircle className="text-[#DDC88A]" />
+                  </div>
+
+                  <div className="mt-6 space-y-4 text-sm">
+
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-white/40">
+                        Servicio
+                      </span>
+
+                      <strong className="text-right text-white">
+                        {selectedService.name}
+                      </strong>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-white/40">
+                        Fecha
+                      </span>
+
+                      <strong className="text-white">
+                        {selectedDate}
+                      </strong>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-white/40">
+                        Horario
+                      </span>
+
+                      <strong className="text-[#DDC88A]">
+                        {selectedTime} -{" "}
+                        {calculateEndTime(
+                          selectedTime,
+                          selectedService.durationMinutes
+                        )}{" "}
+                        hs
+                      </strong>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-white/40">
+                        Cliente
+                      </span>
+
+                      <strong className="text-white">
+                        {clientName}
+                      </strong>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-white/40">
+                        WhatsApp
+                      </span>
+
+                      <strong className="text-white">
+                        {clientPhone}
+                      </strong>
+                    </div>
+
+                    <div className="border-t border-white/10 pt-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-white/50">
+                          Total
+                        </span>
+
+                        <strong className="text-2xl text-[#DDC88A]">
+                          ${formatPrice(selectedService.price)}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* WHATSAPP */}
+                <a
+                  href={getWhatsAppLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    mt-8
+                    flex
+                    w-full
+                    items-center
+                    justify-center
+                    gap-3
+                    rounded-xl
+                    bg-[#076428]
+                    px-5 py-4
+                    text-sm font-bold
+                    text-white
+                    transition-all duration-300
+                    hover:bg-[#087A31]
+                    hover:shadow-lg
+                    hover:shadow-[#076428]/20
+                  "
+                >
+                  <FaWhatsapp className="text-lg" />
+                  Confirmar turno por WhatsApp
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <p className="mt-6 text-center text-xs text-white/25">
+          Familia, Confort & Calidad · Elam Barber Studio
         </p>
       </div>
-
-      {/* Indicador de Pasos (Stepper Header) */}
-      <div className="flex items-center justify-between mb-8 px-4">
-        {[1, 2, 3].map((num) => (
-          <div key={num} className="flex items-center">
-            <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${
-                step >= num
-                  ? "bg-amber-500 text-slate-950"
-                  : "bg-slate-800 text-slate-500"
-              }`}
-            >
-              {num}
-            </div>
-            {num < 3 && (
-              <div
-                className={`w-12 sm:w-24 h-1 mx-2 transition-colors ${
-                  step > num ? "bg-amber-500" : "bg-slate-800"
-                }`}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* PASO 1: SELECCIÓN DE SERVICIO */}
-      {step === 1 && (
-        <div>
-          <h2 className="text-xl font-bold mb-4 text-amber-400">
-            1. Seleccioná un servicio
-          </h2>
-          <div className="grid grid-cols-1 gap-4">
-            {SERVICES_MOCK.map((service) => (
-              <div
-                key={service.id}
-                onClick={() => handleServiceSelect(service)}
-                className={`p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center ${
-                  selectedService?.id === service.id
-                    ? "border-amber-500 bg-amber-500/10"
-                    : "border-slate-800 bg-slate-800/50 hover:border-slate-700"
-                }`}
-              >
-                <div>
-                  <h3 className="font-bold text-lg text-white">
-                    {service.name}
-                  </h3>
-                  <p className="text-sm text-slate-400">
-                    {service.description}
-                  </p>
-                  <span className="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-slate-800 text-amber-400">
-                    ⏱️ {service.durationMinutes} min
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-xl font-bold text-white">
-                    ${service.price}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* PASO 2: SELECCIÓN DE FECHA Y HORA */}
-      {step === 2 && (
-        <div>
-          <button
-            onClick={() => setStep(1)}
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-white mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" /> Volver a Servicios
-          </button>
-
-          <h2 className="text-xl font-bold mb-4 text-amber-400">
-            2. Elege Fecha y Hora
-          </h2>
-
-          {/* Selector de Fecha */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 text-slate-300">
-              Fecha del turno:
-            </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-              <input
-                type="date"
-                min={minDate}
-                max={maxDate}
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-amber-500"
-              />
-            </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Solo disponible para el mes en curso.
-            </p>
-          </div>
-
-          {/* Selector de Horarios Disponibles */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 text-slate-300">
-              Horarios disponibles:
-            </label>
-            {availableSlots.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-56 overflow-y-auto pr-1">
-                {availableSlots.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={`py-2 px-3 rounded-lg font-semibold text-sm border transition-all ${
-                      selectedTime === time
-                        ? "bg-amber-500 text-slate-950 border-amber-500"
-                        : "bg-slate-800 text-slate-200 border-slate-700 hover:border-slate-600"
-                    }`}
-                  >
-                    {time} hs
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-4 rounded-xl text-center text-sm">
-                No hay horarios disponibles para la fecha seleccionada. Probá
-                con otro día.
-              </div>
-            )}
-          </div>
-
-          <button
-            disabled={!selectedTime}
-            onClick={() => setStep(3)}
-            className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold py-3 rounded-xl transition-all"
-          >
-            Continuar a tus datos
-          </button>
-        </div>
-      )}
-
-      {/* PASO 3: DATOS Y CONFIRMACIÓN */}
-      {step === 3 && (
-        <div>
-          <button
-            onClick={() => setStep(2)}
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-white mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" /> Volver a Fecha y Hora
-          </button>
-
-          <h2 className="text-xl font-bold mb-4 text-amber-400">
-            3. Tus Datos
-          </h2>
-
-          {/* Resumen del Turno */}
-          <div className="bg-slate-800/80 rounded-xl p-4 mb-6 border border-slate-700/50 space-y-2 text-sm">
-            <p className="flex justify-between text-slate-300">
-              <span>Servicio:</span>{" "}
-              <strong className="text-white">{selectedService.name}</strong>
-            </p>
-            <p className="flex justify-between text-slate-300">
-              <span>Fecha:</span>{" "}
-              <strong className="text-white">{selectedDate}</strong>
-            </p>
-            <p className="flex justify-between text-slate-300">
-              <span>Horario:</span>
-              <strong className="text-amber-400">
-                {selectedTime} hs -{" "}
-                {calculateEndTime(
-                  selectedTime,
-                  selectedService.durationMinutes,
-                )}{" "}
-                hs
-              </strong>
-            </p>
-            <p className="flex justify-between text-slate-300 pt-2 border-t border-slate-700">
-              <span>Total a pagar:</span>{" "}
-              <strong className="text-white text-base">
-                ${selectedService.price}
-              </strong>
-            </p>
-          </div>
-
-          {/* Formulario */}
-          <div className="space-y-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium mb-1 text-slate-300">
-                Nombre completo:
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Ej: Matías"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-amber-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-slate-300">
-                Teléfono (WhatsApp):
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Ej: 1123456789 (solo números)"
-                  value={clientPhone}
-                  onChange={handlePhoneChange}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-amber-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          <a
-            href={
-              clientName && clientPhone.length >= 8 ? getWhatsAppLink() : "#"
-            }
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              if (!clientName || clientPhone.length < 8) {
-                e.preventDefault();
-                alert("Por favor completá tu nombre y un teléfono válido.");
-              }
-            }}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
-          >
-            <CheckCircle className="w-5 h-5" />
-            Confirmar turno por WhatsApp
-          </a>
-        </div>
-      )}
-    </div>
+    </section>
   );
 }

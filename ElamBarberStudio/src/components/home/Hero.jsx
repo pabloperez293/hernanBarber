@@ -38,32 +38,6 @@ export default function Hero() {
           próximo nivel.
         </p>
 
-        {/* Botón CTA */}
-        <a
-          href="#turnos"
-          className="
-            mt-8
-            inline-flex
-            items-center
-            gap-3
-            rounded-full
-            bg-[#DDC88A]
-            px-7
-            py-3.5
-            text-sm
-            font-bold
-            text-[#0B0B0B]
-            transition-all
-            duration-300
-            hover:scale-105
-            hover:bg-[#e8d9a8]
-            hover:shadow-lg
-            hover:shadow-[#DDC88A]/20
-          "
-        >
-          <FaCalendarDays className="text-sm" />
-          Reservar turno
-        </a>
       </div>
 
       {/* 3. INDICADOR DE SCROLL */}
