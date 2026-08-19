@@ -7,12 +7,14 @@ import Services from "./components/home/Services";
 import Location from "./components/home/Location";
 import BookingStepper from "./components/client/BookingStepper";
 import ScrollToHashElement from "./components/scrollToHasElement/ScrollToHashElement";
+import Gallery from "./components/home/Gallery";
 
 function Home() {
   return (
     <main>
       <Hero />
       <Services />
+      <Gallery />
       <Location />
     </main>
   );
