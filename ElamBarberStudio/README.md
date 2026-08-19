@@ -1,16 +1,87 @@
-# React + Vite
+# Elam Barber Studio 💈
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Sitio web y sistema de gestión de turnos para Elam Barber Studio.
 
-Currently, two official plugins are available:
+El proyecto comenzó como una interfaz web estática y evolucionó hacia una aplicación frontend moderna con React, Vite y Tailwind CSS. El objetivo de esta etapa es construir posteriormente un backend con Java + Spring Boot y PostgreSQL para gestionar turnos, servicios, clientes y administración.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🎯 Objetivo del proyecto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Crear una plataforma digital para Elam Barber Studio que permita:
 
-## Expanding the Oxlint configuration
+- Mostrar información del estudio.
+- Presentar servicios y precios.
+- Mostrar trabajos realizados.
+- Facilitar el contacto con el negocio.
+- Permitir reservas de turnos.
+- Gestionar posteriormente turnos, servicios y disponibilidad desde un panel administrativo.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+# 🖥️ Frontend
+
+## Tecnologías
+
+- React
+- Vite
+- JavaScript
+- Tailwind CSS
+- React Router
+- React Icons
+- Netlify
+- Git / GitHub
+
+---
+
+## 🎨 Identidad visual
+
+### Colores principales
+
+- Fondo oscuro: `#0B0B0B`
+- Dorado: `#DDC88A`
+- Verde oscuro: `#076428`
+- Texto principal: `#FFFFFF`
+
+### Identidad de marca
+
+**Familia, Confort & Calidad**
+
+---
+
+# 📁 Estructura actual
+
+```text
+ElamBarberStudio/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── client/
+│   │   │   └── BookingStepper.jsx
+│   │   ├── home/
+│   │   │   ├── Hero.jsx
+│   │   │   ├── Services.jsx
+│   │   │   ├── Gallery.jsx
+│   │   │   └── Location.jsx
+│   │   ├── layout/
+│   │   │   ├── Navbar.jsx
+│   │   │   └── Footer.jsx
+│   │   └── scrollToHasElement/
+│   │       └── ScrollToHashElement.jsx
+│   │
+│   ├── data/
+│   │   └── mockData.js
+│   │
+│   ├── utils/
+│   │   └── bookingUtils.js
+│   │
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+│
+├── index.html
+├── package.json
+├── tailwind.config.js
+└── README.md
