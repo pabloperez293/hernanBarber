@@ -1,27 +1,21 @@
-// src/components/client/BookingStepper.jsx
-
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FaArrowLeft,
   FaCalendarAlt,
   FaCheck,
-  FaCheckCircle,
-  FaClock,
-  FaPhone,
-  FaUser,
   FaUserTag,
   FaWhatsapp,
 } from "react-icons/fa";
 import { FaScissors } from "react-icons/fa6";
 
-import { BARBERS_MOCK, SERVICES_MOCK } from "../../data/mockData";
 import {
   calculateEndTime,
   getAvailableTimeSlots,
   getDateRangeLimits,
   sanitizePhoneNumber,
 } from "../../utils/bookingUtils";
+const API_URL = "http://localhost:4000/api";
 
 const STEPS = [
   { number: 1, title: "Barbero, Fecha y hora" },
@@ -34,22 +28,54 @@ const formatPrice = (price) => new Intl.NumberFormat("es-AR").format(price);
 export default function BookingStepper() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
   const serviceId = Number(searchParams.get("service"));
-  const selectedService = SERVICES_MOCK.find((s) => s.id === serviceId);
 
+  // Estados de la API
+  const [services, setServices] = useState([]);
+  const [barbers, setBarbers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Estados del stepper
   const [step, setStep] = useState(1);
-  const [selectedBarber, setSelectedBarber] = useState(BARBERS_MOCK[0].name);
+  const [selectedBarber, setSelectedBarber] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { minDate, maxDate } = getDateRangeLimits();
 
+  // Obtener datos desde MySQL vía Node.js
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [resServices, resBarbers] = await Promise.all([
+          fetch(`${API_URL}/services`),
+          fetch(`${API_URL}/barbers`),
+        ]);
+
+        const servicesData = await resServices.json();
+        const barbersData = await resBarbers.json();
+
+        setServices(servicesData);
+        setBarbers(barbersData);
+
+        if (barbersData.length > 0) {
+          setSelectedBarber(barbersData[0].name);
+        }
+      } catch (error) {
+        console.error("Error cargando los datos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
     setSelectedDate(minDate);
   }, [minDate]);
+
+  const selectedService = services.find((s) => s.id === serviceId);
 
   const availableSlots =
     selectedService && selectedDate
@@ -65,25 +91,56 @@ export default function BookingStepper() {
     setClientPhone(sanitizePhoneNumber(e.target.value));
   };
 
-  const getWhatsAppLink = () => {
-    const phoneNumber = "5491112345678";
+  // Guardar en MySQL y luego derivar a WhatsApp
+  const handleConfirmBooking = async () => {
+    setIsSubmitting(true);
     const endTime = calculateEndTime(selectedTime, selectedService.durationMinutes);
 
-    const browsNote = selectedService.includesBrows ? " (¡Cejas bonificadas!)" : "";
+    try {
+      await fetch(`${API_URL}/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          barberName: selectedBarber,
+          serviceId: selectedService.id,
+          clientName,
+          clientPhone,
+          date: selectedDate,
+          startTime: selectedTime,
+          endTime,
+        }),
+      });
 
-    const text =
-      `¡Hola Elam Barber Studio! Quiero confirmar mi turno:\n\n` +
-      `✂️ Servicio: ${selectedService.name}${browsNote}\n` +
-      `👤 Barbero: ${selectedBarber}\n` +
-      `📅 Fecha: ${selectedDate}\n` +
-      `⏰ Horario: ${selectedTime} a ${endTime} hs\n` +
-      `👤 Nombre: ${clientName}\n` +
-      `📞 Teléfono: ${clientPhone}\n` +
-      `💰 Total: $${formatPrice(selectedService.price)}\n\n` +
-      `¡Muchas gracias!`;
+      const phoneNumber = "1166023096";
+      const browsNote = selectedService.includesBrows ? " (¡Cejas bonificadas!)" : "";
 
-    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
+      const text =
+        `¡Hola Elam Barber Studio! Quiero confirmar mi turno:\n\n` +
+        `✂️ Servicio: ${selectedService.name}${browsNote}\n` +
+        `👤 Barbero: ${selectedBarber}\n` +
+        `📅 Fecha: ${selectedDate}\n` +
+        `⏰ Horario: ${selectedTime} a ${endTime} hs\n` +
+        `👤 Nombre: ${clientName}\n` +
+        `📞 Teléfono: ${clientPhone}\n` +
+        `💰 Total: $${formatPrice(selectedService.price)}\n\n` +
+        `¡Muchas gracias!`;
+
+      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+    } catch (error) {
+      console.error("Error al registrar turno:", error);
+      alert("No se pudo registrar la reserva. Verificá que el servidor esté activo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <section className="min-h-screen bg-[#0B0B0B] px-6 py-32 text-center text-white">
+        <p className="text-[#DDC88A]">Cargando datos de la agenda...</p>
+      </section>
+    );
+  }
 
   if (!selectedService) {
     return (
@@ -202,7 +259,7 @@ export default function BookingStepper() {
                   Elegí tu barbero
                 </label>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  {BARBERS_MOCK.map((b) => (
+                  {barbers.map((b) => (
                     <button
                       key={b.id}
                       type="button"
@@ -367,14 +424,15 @@ export default function BookingStepper() {
                 </div>
               </div>
 
-              <a
-                href={getWhatsAppLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 flex w-full items-center justify-center gap-3 rounded-xl bg-[#076428] py-4 font-bold text-white hover:bg-[#087A31]"
+              <button
+                type="button"
+                onClick={handleConfirmBooking}
+                disabled={isSubmitting}
+                className="mt-8 flex w-full items-center justify-center gap-3 rounded-xl bg-[#076428] py-4 font-bold text-white hover:bg-[#087A31] disabled:opacity-50"
               >
-                <FaWhatsapp className="text-lg" /> Confirmar turno por WhatsApp
-              </a>
+                <FaWhatsapp className="text-lg" />
+                {isSubmitting ? "Guardando..." : "Confirmar turno por WhatsApp"}
+              </button>
             </div>
           )}
         </div>
