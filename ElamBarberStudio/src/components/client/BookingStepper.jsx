@@ -111,7 +111,7 @@ export default function BookingStepper() {
         }),
       });
 
-      const phoneNumber = "1166023096";
+      const phoneNumber = "5491112345678";
       const browsNote = selectedService.includesBrows ? " (¡Cejas bonificadas!)" : "";
 
       const text =
@@ -125,10 +125,14 @@ export default function BookingStepper() {
         `💰 Total: $${formatPrice(selectedService.price)}\n\n` +
         `¡Muchas gracias!`;
 
-      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+      const waUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
+
+      // Redirección compatible con celulares y computadoras
+      window.location.href = waUrl;
+
     } catch (error) {
       console.error("Error al registrar turno:", error);
-      alert("No se pudo registrar la reserva. Verificá que el servidor esté activo.");
+      alert("No se pudo registrar la reserva. Verificá tu conexión o reintentá.");
     } finally {
       setIsSubmitting(false);
     }
