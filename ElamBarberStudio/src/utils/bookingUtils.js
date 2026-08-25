@@ -1,6 +1,7 @@
+// src/utils/bookingUtils.js
+
 /**
- * Obtiene los límites de fechas para el calendario de reservas
- * Mínimo: hoy, Máximo: 30 días desde hoy
+ * Devuelve rango de reserva desde hoy hasta 30 días
  */
 export function getDateRangeLimits() {
   const today = new Date();
@@ -14,28 +15,36 @@ export function getDateRangeLimits() {
 }
 
 /**
- * Obtiene los horarios disponibles para una fecha y duración específica
- * @param {string} date - Fecha en formato YYYY-MM-DD
- * @param {number} durationMinutes - Duración del servicio en minutos
- * @returns {string[]} Array de horarios disponibles en formato HH:MM
+ * Horarios disponibles entre 10:00 y 20:00 hs
  */
-export function getAvailableTimeSlots(date, durationMinutes = 30) {
-  // Horarios de apertura y cierre (puedes ajustar según necesidad)
-  const openingTime = 9; // 9:00 AM
-  const closingTime = 18; // 6:00 PM
-  const slotDuration = 30; // Intervalo entre slots en minutos
-
+export function getAvailableTimeSlots(selectedDateStr, durationMinutes = 45) {
   const slots = [];
-  const duration = durationMinutes || 30;
+  const startHour = 10; // 10:00 AM
+  const endHour = 20;   // 20:00 PM
 
-  for (let hour = openingTime; hour < closingTime; hour++) {
-    for (let minutes = 0; minutes < 60; minutes += slotDuration) {
-      // Verificar que el servicio quepa antes del cierre
-      const endTime = new Date(2000, 0, 1, hour, minutes + duration);
-      if (endTime.getHours() < closingTime || (endTime.getHours() === closingTime && endTime.getMinutes() === 0)) {
-        const timeString = `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-        slots.push(timeString);
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
+  const isToday = selectedDateStr === todayStr;
+
+  let currentMinutes = today.getHours() * 60 + today.getMinutes();
+
+  for (let hour = startHour; hour < endHour; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      const slotStartMinutes = hour * 60 + minute;
+
+      // Omitir si la duración sobrepasa las 20:00 hs
+      if (slotStartMinutes + durationMinutes > endHour * 60) {
+        continue;
       }
+
+      // Si es hoy, omitir turnos pasados
+      if (isToday && slotStartMinutes <= currentMinutes) {
+        continue;
+      }
+
+      const formattedHour = String(hour).padStart(2, "0");
+      const formattedMinute = String(minute).padStart(2, "0");
+      slots.push(`${formattedHour}:${formattedMinute}`);
     }
   }
 
@@ -43,24 +52,19 @@ export function getAvailableTimeSlots(date, durationMinutes = 30) {
 }
 
 /**
- * Calcula la hora de fin basada en la hora de inicio y duración
- * @param {string} startTime - Hora de inicio en formato HH:MM
- * @param {number} durationMinutes - Duración en minutos
- * @returns {string} Hora de fin en formato HH:MM
+ * Calcula hora fin según la duración
  */
-export function calculateEndTime(startTime, durationMinutes) {
-  const [hours, minutes] = startTime.split(":").map(Number);
-  const date = new Date(2000, 0, 1, hours, minutes);
-  date.setMinutes(date.getMinutes() + durationMinutes);
+export function calculateEndTime(startTimeStr, durationMinutes) {
+  if (!startTimeStr) return "";
+  const [hours, minutes] = startTimeStr.split(":").map(Number);
+  const totalMinutes = hours * 60 + minutes + durationMinutes;
 
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  const endHours = Math.floor(totalMinutes / 60);
+  const endMins = totalMinutes % 60;
+
+  return `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
 }
 
-/**
- * Sanitiza un número de teléfono removiendo caracteres no numéricos
- * @param {string} phone - Número de teléfono
- * @returns {string} Número de teléfono sanitizado
- */
 export function sanitizePhoneNumber(phone) {
   return phone.replace(/\D/g, "");
 }

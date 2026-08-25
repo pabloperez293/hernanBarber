@@ -1,11 +1,18 @@
 // src/data/mockData.js
 
+export const BARBERS_MOCK = [
+  { id: 0, name: "Cualquiera disponible" },
+  { id: 1, name: "Javier" },
+  { id: 2, name: "Fabricio" },
+];
+
 export const SERVICES_MOCK = [
+  // --- CABELLO Y COMBOS ---
   {
     id: 1,
     name: "Corte",
     description: "Corte tradicional o degradado.",
-    durationMinutes: 30,
+    durationMinutes: 45,
     price: 18000,
     category: "cabello",
   },
@@ -13,9 +20,10 @@ export const SERVICES_MOCK = [
     id: 2,
     name: "Corte + Ceja",
     description: "Corte de cabello y perfilado de cejas.",
-    durationMinutes: 30,
+    durationMinutes: 45,
     price: 21000,
     category: "combos",
+    includesBrows: true,
   },
   {
     id: 3,
@@ -29,9 +37,10 @@ export const SERVICES_MOCK = [
     id: 4,
     name: "Corte + Barba + Ceja",
     description: "Servicio completo de cabello, barba y cejas.",
-    durationMinutes: 45,
+    durationMinutes: 60,
     price: 25000,
     category: "combos",
+    includesBrows: true,
   },
   {
     id: 5,
@@ -40,19 +49,22 @@ export const SERVICES_MOCK = [
     durationMinutes: 15,
     price: 3000,
     category: "facial",
+    includesBrows: true,
   },
   {
     id: 6,
     name: "Jubilado y Niño",
     description: "Corte para jubilados y niños.",
-    durationMinutes: 30,
+    durationMinutes: 45,
     price: 12000,
     category: "cabello",
   },
+
+  // --- FACIAL Y TRATAMIENTOS ---
   {
     id: 7,
     name: "Depilación con Cera",
-    description: "Nariz u oreja.",
+    description: "Depilación de nariz u orejas.",
     durationMinutes: 15,
     price: 7000,
     category: "facial",
@@ -60,7 +72,7 @@ export const SERVICES_MOCK = [
   {
     id: 8,
     name: "Hidratación de Cabello",
-    description: "Tratamiento de hidratación capilar.",
+    description: "Tratamiento de hidratación capilar intensivo.",
     durationMinutes: 20,
     price: 6000,
     category: "tratamientos",
@@ -68,33 +80,77 @@ export const SERVICES_MOCK = [
   {
     id: 9,
     name: "Limpieza de Cutis",
-    description: "Limpieza facial.",
-    durationMinutes: 30,
+    description: "Limpieza facial profunda.",
+    durationMinutes: 40,
     price: 10000,
     category: "facial",
   },
   {
     id: 10,
     name: "Pigmentación",
-    description: "Pigmentación y definición.",
-    durationMinutes: 30,
+    description: "Pigmentación y definición de contornos.",
+    durationMinutes: 15,
     price: 10000,
     category: "tratamientos",
   },
+
+  // --- COLOR ---
   {
     id: 11,
     name: "Global",
-    description: "Servicio global de transformación y cuidado.",
-    durationMinutes: 90,
-    price: 49000,
+    description: "Coloración global de cambio de tono.",
+    durationMinutes: 180,
+    price: 50000,
     category: "color",
   },
   {
     id: 12,
     name: "Claros",
     description: "Trabajo técnico de iluminación y decoloración.",
-    durationMinutes: 90,
-    price: 39000,
+    durationMinutes: 180,
+    price: 40000,
     category: "color",
+  },
+
+  // --- PLANES Y PROMOS ---
+  {
+    id: 13,
+    name: "Plan Mensual: Corte (Lun a Jue)",
+    description: "Corte ilimitado de lunes a jueves. ¡Cejas bonificadas!",
+    durationMinutes: 45,
+    price: 30000,
+    category: "planes",
+    includesBrows: true,
+    isPromo: true,
+  },
+  {
+    id: 14,
+    name: "Plan Mensual: Corte (Lun a Sáb)",
+    description: "Corte ilimitado de lunes a sábado. ¡Cejas bonificadas!",
+    durationMinutes: 45,
+    price: 50000,
+    category: "planes",
+    includesBrows: true,
+    isPromo: true,
+  },
+  {
+    id: 15,
+    name: "Plan Mensual: Corte + Barba (Lun a Jue)",
+    description: "Corte y barba ilimitados de lunes a jueves. ¡Cejas bonificadas!",
+    durationMinutes: 60,
+    price: 50000,
+    category: "planes",
+    includesBrows: true,
+    isPromo: true,
+  },
+  {
+    id: 16,
+    name: "Plan Mensual: Corte + Barba (Lun a Sáb)",
+    description: "Corte y barba ilimitados de lunes a sábado. ¡Cejas bonificadas!",
+    durationMinutes: 60,
+    price: 50000,
+    category: "planes",
+    includesBrows: true,
+    isPromo: true,
   },
 ];
