@@ -12,7 +12,7 @@ import logo from "../../assets/jr.jpg";
 const navLinks = [
   { label: "Inicio", href: "#inicio" },
   { label: "Servicios", href: "#servicios" },
-  { label: "Barberos", href: "#barberos" },
+  // { label: "Barberos", href: "#barberos" },
   { label: "Galería", href: "#galeria" },
   { label: "Ubicación", href: "#ubicacion" },
 ];
