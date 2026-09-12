@@ -742,7 +742,7 @@ export default function BookingStepper() {
          */
 
         const phoneNumber =
-          "5491112345678";
+          "5491140311401";
 
         const browsNote =
           selectedService.includesBrows
