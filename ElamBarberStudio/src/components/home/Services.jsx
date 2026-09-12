@@ -10,6 +10,7 @@ const FILTERS = [
   { id: "facial", label: "Facial" },
   { id: "tratamientos", label: "Tratamientos" },
   { id: "color", label: "Color" },
+  { id: "planes", label: "Planes" },
 ];
 
 const formatPrice = (price) => {
@@ -19,17 +20,22 @@ const formatPrice = (price) => {
 export default function Services() {
   const navigate = useNavigate();
 
-  const [activeFilter, setActiveFilter] = useState(FILTERS[0].id);
+  const [activeFilter, setActiveFilter] = useState(
+    FILTERS[0].id
+  );
+
+  const services = SERVICES_MOCK;
 
   const filteredServices = useMemo(() => {
-    return SERVICES_MOCK.filter(
+    return services.filter(
       (service) =>
-        service.category.toLowerCase() === activeFilter.toLowerCase()
+        service.category?.toLowerCase() ===
+        activeFilter.toLowerCase()
     );
-  }, [activeFilter]);
+  }, [services, activeFilter]);
 
   const handleSelectService = (serviceId) => {
-    navigate(`/reservar?service=${serviceId}`);
+    navigate("/reservar?service=" + serviceId);
   };
 
   return (
@@ -38,7 +44,6 @@ export default function Services() {
       className="bg-[#0B0B0B] px-6 py-24 text-white"
     >
       <div className="mx-auto max-w-7xl">
-
         {/* HEADER */}
         <div className="mx-auto max-w-2xl text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.35em] text-[#DDC88A]">
@@ -65,18 +70,11 @@ export default function Services() {
                 key={filter.id}
                 type="button"
                 onClick={() => setActiveFilter(filter.id)}
-                className={`
-                  rounded-full
-                  border
-                  px-4 py-2
-                  text-xs font-semibold
-                  transition-all duration-300
-                  ${
-                    isActive
-                      ? "border-[#DDC88A] bg-[#DDC88A] text-[#0B0B0B]"
-                      : "border-white/10 bg-white/[0.03] text-white/60 hover:border-[#DDC88A]/40 hover:text-[#DDC88A]"
-                  }
-                `}
+                className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-300 ${
+                  isActive
+                    ? "border-[#DDC88A] bg-[#DDC88A] text-[#0B0B0B]"
+                    : "border-white/10 bg-white/[0.03] text-white/60 hover:border-[#DDC88A]/40 hover:text-[#DDC88A]"
+                }`}
               >
                 {filter.label}
               </button>
@@ -167,7 +165,15 @@ export default function Services() {
             </article>
           ))}
         </div>
+
+        {/* SIN SERVICIOS */}
+        {filteredServices.length === 0 && (
+          <div className="mt-12 text-center text-white/50">
+            No hay servicios disponibles en esta categoría.
+          </div>
+        )}
       </div>
     </section>
   );
 }
+
