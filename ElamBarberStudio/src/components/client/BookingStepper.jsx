@@ -69,7 +69,7 @@ export default function BookingStepper() {
 
   // Estado de disponibilidad
   const [availability, setAvailability] =
-    useState({});
+    useState(null);
 
   const [
     loadingAvailability,
@@ -83,6 +83,11 @@ export default function BookingStepper() {
   const [
     selectedBarber,
     setSelectedBarber,
+  ] = useState("");
+
+  const [
+    availabilityNotice,
+    setAvailabilityNotice,
   ] = useState("");
 
   const [
@@ -229,7 +234,7 @@ export default function BookingStepper() {
 
           if (!cancelled) {
             setAvailability(
-              data || {}
+              data || null
             );
           }
         } catch (error) {
@@ -239,7 +244,10 @@ export default function BookingStepper() {
           );
 
           if (!cancelled) {
-            setAvailability({});
+            setAvailability(null);
+            setAvailabilityNotice(
+              "No se pudo consultar la disponibilidad. Intentá nuevamente."
+            );
           }
         } finally {
           if (!cancelled) {
@@ -292,7 +300,8 @@ export default function BookingStepper() {
   ) => {
     if (
       !selectedService ||
-      !startTime
+      !startTime ||
+      !availability
     ) {
       return false;
     }
@@ -348,7 +357,7 @@ export default function BookingStepper() {
 
   const getAvailableBarbersForTime =
     (time) => {
-      if (!time) {
+      if (!time || !availability) {
         return [];
       }
 
@@ -369,17 +378,40 @@ export default function BookingStepper() {
    * =========================================================
    */
 
-  const handleDateChange = (
-    e
-  ) => {
-    setSelectedDate(
-      e.target.value
+const handleDateChange = (e) => {
+  const selectedDateValue = e.target.value;
+
+  if (!selectedDateValue) {
+    return;
+  }
+
+  const [year, month, day] = selectedDateValue
+    .split("-")
+    .map(Number);
+
+  const selectedDateObject = new Date(
+    year,
+    month - 1,
+    day
+  );
+
+  if (selectedDateObject.getDay() === 0) {
+    alert(
+      "Los domingos Elam Barber Studio permanece cerrado. Elegí otro día."
     );
 
+    setSelectedDate("");
     setSelectedTime("");
-
     setSelectedBarber("");
-  };
+
+    return;
+  }
+
+  setSelectedDate(selectedDateValue);
+  setSelectedTime("");
+  setSelectedBarber("");
+  setAvailabilityNotice("");
+};
 
   /**
    * =========================================================
@@ -406,48 +438,42 @@ export default function BookingStepper() {
    * buscamos automáticamente un barbero disponible.
    */
 
-  const handleTimeChange = (
-    time
-  ) => {
+  const handleTimeChange = (time) => {
     setSelectedTime(time);
+    setAvailabilityNotice("");
 
     const availableBarbers =
-      getAvailableBarbersForTime(
-        time
-      );
+      getAvailableBarbersForTime(time);
 
-    if (
-      availableBarbers.length > 0
-    ) {
-      /**
-       * Si ya había un barbero elegido
-       * y sigue libre, lo mantenemos.
-       */
-      const currentBarberAvailable =
-        availableBarbers.some(
-          (barber) =>
-            barber.name ===
-            selectedBarber
-        );
-
-      if (
-        currentBarberAvailable
-      ) {
-        return;
-      }
-
-      /**
-       * Si no, tomamos el primero
-       * disponible.
-       */
-      setSelectedBarber(
-        availableBarbers[0].name
-      );
-
+    if (availableBarbers.length === 0) {
+      setSelectedBarber("");
       return;
     }
 
-    setSelectedBarber("");
+    const currentBarberAvailable =
+      availableBarbers.some(
+        (barber) =>
+          barber.name === selectedBarber
+      );
+
+    if (currentBarberAvailable) {
+      return;
+    }
+
+    const newBarber =
+      availableBarbers[0].name;
+
+    if (
+      selectedBarber &&
+      selectedBarber !==
+        "Cualquiera disponible"
+    ) {
+      setAvailabilityNotice(
+        `${selectedBarber} no está disponible a las ${time}. Te asignamos ${newBarber}, que sí está disponible.`
+      );
+    }
+
+    setSelectedBarber(newBarber);
   };
 
   /**
@@ -1148,6 +1174,12 @@ export default function BookingStepper() {
                 )}
 
               </div>
+
+              {availabilityNotice && (
+                <div className="mt-4 rounded-xl border border-[#DDC88A]/20 bg-[#DDC88A]/5 p-4 text-sm text-[#DDC88A]">
+                  {availabilityNotice}
+                </div>
+              )}
 
               <button
                 type="button"
