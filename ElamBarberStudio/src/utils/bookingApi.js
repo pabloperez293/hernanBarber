@@ -1,6 +1,11 @@
 import { BARBERS_MOCK, SERVICES_MOCK } from "../data/mockData";
 
-const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
+const GOOGLE_SCRIPT_URL =
+  import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
+
+const GOOGLE_API_URL = import.meta.env.DEV
+  ? "/google-api"
+  : GOOGLE_SCRIPT_URL;
 
 function timeToMinutes(time) {
   if (!time) return 0;
@@ -40,7 +45,10 @@ export async function getAvailability({
 }) {
   ensureGoogleScriptConfigured();
 
-  const url = new URL(GOOGLE_SCRIPT_URL);
+  const url = new URL(
+  GOOGLE_API_URL,
+  window.location.origin
+);
 
   url.searchParams.set("action", "availability");
 url.searchParams.set("date", date);
@@ -90,7 +98,10 @@ url.searchParams.set(
 export async function createAppointment(appointment) {
   ensureGoogleScriptConfigured();
 
-  const url = new URL(GOOGLE_SCRIPT_URL);
+  const url = new URL(
+  GOOGLE_API_URL,
+  window.location.origin
+);
 
   url.searchParams.set("action", "createAppointment");
 
