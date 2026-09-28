@@ -8,6 +8,7 @@ import Location from "./components/home/Location";
 import BookingStepper from "./components/client/BookingStepper";
 import ScrollToHashElement from "./components/scrollToHasElement/ScrollToHashElement";
 import Gallery from "./components/home/Gallery";
+import AdminPage from "./components/admin/AdminPage";
 
 function Home() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/reservar" element={<Booking />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </div>
         <Footer />

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useNavigate,
   useSearchParams,
@@ -114,6 +114,10 @@ export default function BookingStepper() {
     isSubmitting,
     setIsSubmitting,
   ] = useState(false);
+
+  // Evita que un doble toque en "Confirmar" envíe la reserva dos veces
+  // (el estado de React se actualiza tarde, la ref es inmediata).
+  const submitLock = useRef(false);
 
   const { minDate, maxDate } =
     getDateRangeLimits();
@@ -642,6 +646,12 @@ const handleDateChange = (e) => {
         return;
       }
 
+      if (submitLock.current) {
+        return;
+      }
+
+      submitLock.current = true;
+
       setIsSubmitting(true);
 
       const endTime =
@@ -806,6 +816,7 @@ const handleDateChange = (e) => {
             "No se pudo registrar la reserva. Verificá tu conexión o reintentá."
         );
       } finally {
+        submitLock.current = false;
         setIsSubmitting(false);
       }
     };
