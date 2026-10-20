@@ -1,11 +1,25 @@
 import { BARBERS_MOCK, SERVICES_MOCK } from "../data/mockData";
 
-const GOOGLE_SCRIPT_URL =
-  import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
 
-const GOOGLE_API_URL = import.meta.env.DEV
-  ? "/google-api"
-  : GOOGLE_SCRIPT_URL;
+const GOOGLE_SCRIPT_URL = (
+  import.meta.env.VITE_GOOGLE_SCRIPT_URL || ""
+).trim();
+
+const GOOGLE_API_URL = GOOGLE_SCRIPT_URL;
+
+function ensureGoogleScriptConfigured() {
+  if (
+    !GOOGLE_SCRIPT_URL.startsWith(
+      "https://script.google.com/macros/s/"
+    ) ||
+    !GOOGLE_SCRIPT_URL.endsWith("/exec")
+  ) {
+    throw new Error(
+      "La URL de Google Apps Script no es válida. Revisá VITE_GOOGLE_SCRIPT_URL en el archivo .env."
+    );
+  }
+}
+
 
 function timeToMinutes(time) {
   if (!time) return 0;
@@ -20,14 +34,6 @@ function intervalsOverlap(startA, endA, startB, endB) {
     timeToMinutes(startA) < timeToMinutes(endB) &&
     timeToMinutes(endA) > timeToMinutes(startB)
   );
-}
-
-function ensureGoogleScriptConfigured() {
-  if (!GOOGLE_SCRIPT_URL) {
-    throw new Error(
-      "El sistema de reservas no está configurado correctamente."
-    );
-  }
 }
 
 export async function getServices() {

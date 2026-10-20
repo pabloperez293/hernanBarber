@@ -210,67 +210,73 @@ export default function BookingStepper() {
    * =========================================================
    */
 
+  // Refrescamos disponibilidad al entrar, cada 30 segundos y al volver a la pestaña.
+  // Si falla la consulta, nunca ofrecemos horarios como libres.
   useEffect(() => {
-    if (
-      !selectedDate ||
-      !selectedService
-    ) {
+    if (!selectedDate || !selectedService) {
+      setAvailability(null);
       return;
     }
-
     let cancelled = false;
-
-    const loadAvailability =
-      async () => {
-        try {
-          setLoadingAvailability(
-            true
-          );
-
-          const data =
-            await getAvailability({
-              date: selectedDate,
-              serviceId:
-                selectedService.id,
-              serviceDuration:
-                selectedService.durationMinutes,
-            });
-
-          if (!cancelled) {
-            setAvailability(
-              data || null
-            );
+    let requestNumber = 0;
+    const refresh = async () => {
+      const current = ++requestNumber;
+      setLoadingAvailability(true);
+      try {
+        const data = await getAvailability({
+          date: selectedDate,
+          serviceId: selectedService.id,
+          serviceDuration: selectedService.durationMinutes,
+        });
+        if (!cancelled && current === requestNumber) {
+          if (!data || typeof data !== "object" ||
+              !Array.isArray(data.Javier) || !Array.isArray(data.Fabricio)) {
+            throw new Error("Respuesta de disponibilidad incompleta");
           }
-        } catch (error) {
-          console.error(
-            "Error consultando disponibilidad:",
-            error
-          );
-
-          if (!cancelled) {
-            setAvailability(null);
-            setAvailabilityNotice(
-              "No se pudo consultar la disponibilidad. Intentá nuevamente."
-            );
-          }
-        } finally {
-          if (!cancelled) {
-            setLoadingAvailability(
-              false
-            );
-          }
+          setAvailability(data);
+          setAvailabilityNotice("");
         }
-      };
-
-    loadAvailability();
-
+      } catch (error) {
+        console.error("Error consultando disponibilidad:", error);
+        if (!cancelled && current === requestNumber) {
+          setAvailability(null);
+          setAvailabilityNotice("No se pudo consultar la agenda. No se permiten reservas hasta actualizarla.");
+        }
+      } finally {
+        if (!cancelled && current === requestNumber) setLoadingAvailability(false);
+      }
+    };
+    setAvailability(null);
+    setSelectedTime("");
+    refresh();
+    const interval = window.setInterval(refresh, 30000);
+    const onFocus = () => refresh();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [
-    selectedDate,
-    selectedService,
-  ]);
+  }, [selectedDate, selectedService?.id, selectedService?.durationMinutes]);
+
+  // Si una ausencia nueva ocupa la selección actual, la invalidamos.
+  useEffect(() => {
+    if (!availability || !selectedTime || !selectedService) return;
+    const candidates = barbers.filter(b =>
+      b.name !== "Cualquiera disponible" && isBarberAvailable(b.name, selectedTime)
+    );
+    if (selectedBarber === "Cualquiera disponible") {
+      if (!candidates.length) setSelectedTime("");
+    } else if (selectedBarber && !candidates.some(b => b.name === selectedBarber)) {
+      setSelectedTime("");
+      setAvailabilityNotice("La disponibilidad cambió. Elegí otro horario.");
+    }
+  }, [availability]);
 
   /**
    * =========================================================
@@ -443,41 +449,16 @@ const handleDateChange = (e) => {
    */
 
   const handleTimeChange = (time) => {
+    if (!availability || loadingAvailability) return;
+    const candidates = getAvailableBarbersForTime(time);
+    if (!candidates.length) return;
+    if (selectedBarber && selectedBarber !== "Cualquiera disponible" &&
+        !isBarberAvailable(selectedBarber, time)) {
+      setAvailabilityNotice(`${selectedBarber} no está disponible a las ${time}.`);
+      return;
+    }
     setSelectedTime(time);
     setAvailabilityNotice("");
-
-    const availableBarbers =
-      getAvailableBarbersForTime(time);
-
-    if (availableBarbers.length === 0) {
-      setSelectedBarber("");
-      return;
-    }
-
-    const currentBarberAvailable =
-      availableBarbers.some(
-        (barber) =>
-          barber.name === selectedBarber
-      );
-
-    if (currentBarberAvailable) {
-      return;
-    }
-
-    const newBarber =
-      availableBarbers[0].name;
-
-    if (
-      selectedBarber &&
-      selectedBarber !==
-        "Cualquiera disponible"
-    ) {
-      setAvailabilityNotice(
-        `${selectedBarber} no está disponible a las ${time}. Te asignamos ${newBarber}, que sí está disponible.`
-      );
-    }
-
-    setSelectedBarber(newBarber);
   };
 
   /**
@@ -486,63 +467,14 @@ const handleDateChange = (e) => {
    * =========================================================
    */
 
-  const handleBarberChange = (
-    barberName
-  ) => {
-    /**
-     * Cualquiera disponible
-     */
-    if (
-      barberName ===
-      "Cualquiera disponible"
-    ) {
-      if (!selectedTime) {
-        setSelectedBarber(
-          barberName
-        );
-
-        return;
-      }
-
-      const availableBarbers =
-        getAvailableBarbersForTime(
-          selectedTime
-        );
-
-      if (
-        availableBarbers.length ===
-        0
-      ) {
-        return;
-      }
-
-      setSelectedBarber(
-        availableBarbers[0].name
-      );
-
-      return;
-    }
-
-    /**
-     * Barbero específico
-     */
-    if (
-      selectedTime &&
-      !isBarberAvailable(
-        barberName,
-        selectedTime
-      )
-    ) {
-      alert(
-        "Ese barbero no está disponible para ese horario."
-      );
-
-      return;
-    }
-
-    setSelectedBarber(
-      barberName
-    );
+  const handleBarberChange = (barberName) => {
+    if (!availability || loadingAvailability) return;
+    if (barberName !== "Cualquiera disponible" &&
+        !availableSlots.some(time => isBarberAvailable(barberName, time))) return;
+    setSelectedBarber(barberName);
+    if (selectedTime && barberName !== "Cualquiera disponible" &&
+        !isBarberAvailable(barberName, selectedTime)) setSelectedTime("");
+    setAvailabilityNotice("");
   };
 
   /**
@@ -551,77 +483,25 @@ const handleDateChange = (e) => {
    * =========================================================
    */
 
-  const handleContinue =
-    () => {
-      if (!selectedTime) {
+  const handleContinue = () => {
+    if (!selectedTime || !availability || loadingAvailability) return;
+    const candidates = getAvailableBarbersForTime(selectedTime);
+    if (!candidates.length) {
+      setSelectedTime("");
+      setAvailabilityNotice("Ese horario ya no está disponible.");
+      return;
+    }
+    if (selectedBarber && selectedBarber !== "Cualquiera disponible") {
+      if (!isBarberAvailable(selectedBarber, selectedTime)) {
+        setSelectedTime("");
+        setAvailabilityNotice("El barbero elegido no está disponible.");
         return;
       }
-
-      /**
-       * Si no hay barbero seleccionado,
-       * asignamos uno disponible automáticamente.
-       */
-      if (!selectedBarber) {
-        const availableBarbers =
-          getAvailableBarbersForTime(
-            selectedTime
-          );
-
-        if (
-          availableBarbers.length ===
-          0
-        ) {
-          alert(
-            "No hay barberos disponibles para ese horario."
-          );
-
-          return;
-        }
-
-        setSelectedBarber(
-          availableBarbers[0].name
-        );
-      }
-
-      /**
-       * Si por alguna razón el barbero
-       * seleccionado dejó de estar disponible,
-       * buscamos otro automáticamente.
-       */
-      if (
-        selectedBarber &&
-        selectedBarber !==
-          "Cualquiera disponible" &&
-        !isBarberAvailable(
-          selectedBarber,
-          selectedTime
-        )
-      ) {
-        const availableBarbers =
-          getAvailableBarbersForTime(
-            selectedTime
-          );
-
-        if (
-          availableBarbers.length ===
-          0
-        ) {
-          alert(
-            "Ese horario ya no está disponible."
-          );
-
-          setSelectedTime("");
-
-          return;
-        }
-
-        setSelectedBarber(
-          availableBarbers[0].name
-        );
-      }
-
-      setStep(2);
-    };
+    } else {
+      setSelectedBarber(candidates[0].name);
+    }
+    setStep(2);
+  };
 
   /**
    * =========================================================
@@ -1035,13 +915,12 @@ const handleDateChange = (e) => {
                         b.name ===
                         "Cualquiera disponible";
 
-                      const isBusy =
-                        selectedTime &&
-                        !isAny &&
-                        !isBarberAvailable(
-                          b.name,
-                          selectedTime
-                        );
+                      const isBusy = !isAny && (
+                        !availability || loadingAvailability ||
+                        !(selectedTime
+                          ? isBarberAvailable(b.name, selectedTime)
+                          : availableSlots.some(time => isBarberAvailable(b.name, time)))
+                      );
 
                       return (
                         <button
@@ -1142,8 +1021,10 @@ const handleDateChange = (e) => {
                           );
 
                         const hasAvailableBarber =
-                          availableBarbers.length >
-                          0;
+                          Boolean(availability) && !loadingAvailability &&
+                          (selectedBarber && selectedBarber !== "Cualquiera disponible"
+                            ? isBarberAvailable(selectedBarber, time)
+                            : availableBarbers.length > 0);
 
                         return (
                           <button
@@ -1195,7 +1076,7 @@ const handleDateChange = (e) => {
               <button
                 type="button"
                 disabled={
-                  !selectedTime
+                  !selectedTime || !availability || loadingAvailability
                 }
                 onClick={
                   handleContinue
