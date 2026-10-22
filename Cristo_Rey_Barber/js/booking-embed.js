@@ -1,33 +1,80 @@
+
 /**
- * FASE 2 | Integración visual con Apps Script.
- * El backend recibe reservas dentro de su propio iframe (google.script.run).
- * No hay claves privadas en Netlify ni peticiones CORS a Sheets.
+ * CRISTO REY BARBER SHOP
+ * FASE 2 | Acceso al sistema de reservas
+ *
+ * Abre Google Apps Script directamente para evitar
+ * problemas con iframes y redirecciones de Google.
  */
+
 (() => {
-  'use strict';
+  "use strict";
+
+  // 01 | CONFIGURACIÓN
   const config = window.CRISTO_REY_BOOKING || {};
-  const url = String(config.appsScriptUrl || '').trim();
-  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(url)) return;
-  const booking = document.getElementById('crBookingFrame');
-  const fallback = document.getElementById('crBookingSetup');
-  if (booking && fallback) {
-    booking.src = url;
-    booking.hidden = false;
-    fallback.hidden = true;
+  const bookingUrl = String(config.appsScriptUrl || "").trim();
+
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(bookingUrl)) {
+    console.error("Cristo Rey: URL de Apps Script inválida o faltante.");
+    return;
   }
-  // El catálogo público es una segunda vista del mismo Apps Script.
-  const live = document.getElementById('crCatalogLive');
-  const cards = document.getElementById('crServicesGrid');
-  if (live && cards) {
-    const iframe = document.createElement('iframe');
-    iframe.title = 'Servicios y precios actualizados';
-    iframe.loading = 'lazy';
-    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    const target = new URL(url);
-    target.searchParams.set('view', 'catalogo');
-    iframe.src = target.toString();
-    live.appendChild(iframe);
-    live.hidden = false;
-    cards.hidden = true;
+
+  // 02 | ESPERAR A QUE CARGUE LA PÁGINA
+  function iniciarReservas() {
+    const iframe = document.getElementById("crBookingFrame");
+    const fallback = document.getElementById("crBookingSetup");
+    const catalogoIframe = document.getElementById("crCatalogLive");
+    const tarjetas = document.getElementById("crServicesGrid");
+
+    // 03 | OCULTAR LOS IFRAMES DE GOOGLE
+    if (iframe) {
+      iframe.removeAttribute("src");
+      iframe.hidden = true;
+    }
+
+    if (catalogoIframe) {
+      catalogoIframe.hidden = true;
+    }
+
+    if (tarjetas) {
+      tarjetas.hidden = false;
+    }
+
+    // 04 | CREAR ACCESO AL CALENDARIO
+    if (fallback) {
+      fallback.hidden = false;
+
+      let boton = document.getElementById("crAbrirReservas");
+
+      if (!boton) {
+        boton = document.createElement("a");
+        boton.id = "crAbrirReservas";
+        boton.textContent = "ELEGIR FECHA Y RESERVAR ↗";
+        boton.className = "btn btn-gold";
+        fallback.appendChild(boton);
+      }
+
+      boton.href = bookingUrl;
+      boton.target = "_blank";
+      boton.rel = "noopener noreferrer";
+    }
+
+    // 05 | CONECTAR BOTONES DE LOS SERVICIOS
+    document.querySelectorAll('a[href="#turnos"]').forEach(enlace => {
+      if (enlace.closest("#crServicesGrid")) {
+        enlace.href = bookingUrl;
+        enlace.target = "_blank";
+        enlace.rel = "noopener noreferrer";
+      }
+    });
+
+    // 06 | INFORMACIÓN DE DEPURACIÓN
+    console.info("Cristo Rey: sistema de reservas conectado.");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", iniciarReservas);
+  } else {
+    iniciarReservas();
   }
 })();

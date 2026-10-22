@@ -1197,3 +1197,50 @@ dialog button {
 .cr-booking-host iframe {display:block;width:100%;height:840px;border:0;border-radius:12px;background:#042C2E}
 .cr-booking-setup p {margin:0 0 16px}
 @media(max-width:700px){.cr-booking-host iframe{height:1050px}.cr-catalog-live iframe{min-height:1260px}}
+
+/* 01 | Grilla adaptable */
+#crServicesGrid.service-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  align-items:stretch;
+}
+/* 02 | Tarjetas compactas con efecto de desplazamiento */
+#crServicesGrid .service {
+  min-width:0;
+  min-height:215px;
+  padding:22px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  border:1px solid rgba(4,44,46,.14);
+  transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;
+}
+#crServicesGrid .service:hover,
+#crServicesGrid .service:focus-within {
+  transform:translateY(-7px);
+  border-color:#d3af5b;
+  box-shadow:0 15px 30px rgba(4,44,46,.12);
+}
+#crServicesGrid .service-icon {font-size:28px;line-height:1;margin-bottom:12px}
+#crServicesGrid .service-num {font-size:12px;margin-bottom:10px}
+#crServicesGrid .service h3 {
+  font-size:clamp(20px,2vw,26px);
+  line-height:1.18;
+  margin:0 0 10px;
+  overflow-wrap:anywhere;
+}
+#crServicesGrid .cr-service-price {font-size:16px;margin:0 0 18px}
+#crServicesGrid .service a {margin-top:auto;transition:color .2s ease,letter-spacing .2s ease}
+#crServicesGrid .service a:hover,
+#crServicesGrid .service a:focus-visible {color:#b38a32;letter-spacing:.07em}
+/* 03 | Tablet y celulares */
+@media(max-width:1050px){#crServicesGrid.service-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){
+  #crServicesGrid.service-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #crServicesGrid .service{padding:17px 14px;min-height:190px}
+  #crServicesGrid .service h3{font-size:20px}
+  #crServicesGrid .service-icon{font-size:25px}
+}
+@media(max-width:360px){#crServicesGrid.service-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#crServicesGrid .service{transition:none}#crServicesGrid .service:hover{transform:none}}
