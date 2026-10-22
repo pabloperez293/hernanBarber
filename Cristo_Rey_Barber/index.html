@@ -78,10 +78,7 @@
     </div>
     <div class="hero-inner reveal">
      <div class="eyebrow">
-      <span class="sparkle">
-       ✦
-      </span>
-      BIENVENIDO A CRISTO REY BARBER SHOP
+
      </div>
      <h1>
       EL ARTE DE UN
@@ -210,62 +207,19 @@
       Encontrá el estilo que mejor va con vos. Cada detalle cuenta.
      </p>
     </div>
-    <div class="service-grid">
-     <article class="service reveal">
-      <span class="service-icon">
-       ✂
-      </span>
-      <div class="service-num">
-       01 /
-      </div>
-      <h3>
-       Corte clásico
-      </h3>
-      <p>
-       Un estilo prolijo y atemporal, hecho a tu medida.
-      </p>
-      <a href="#turnos">
-       RESERVAR ↗
-      </a>
-     </article>
-     <article class="service reveal">
-      <span class="service-icon">
-       ◈
-      </span>
-      <div class="service-num">
-       02 /
-      </div>
-      <h3>
-       Degradado / Fade
-      </h3>
-      <p>
-       Transiciones limpias y terminaciones de precisión.
-      </p>
-      <a href="#turnos">
-       RESERVAR ↗
-      </a>
-     </article>
-     <article class="service reveal">
-      <span class="service-icon">
-       ✧
-      </span>
-      <div class="service-num">
-       03 /
-      </div>
-      <h3>
-       Diseños
-      </h3>
-      <p>
-       Detalles personalizados que marcan la diferencia.
-      </p>
-      <a href="#turnos">
-       RESERVAR ↗
-      </a>
-     </article>
+    <!-- FASE 2 | Catálogo inicial. El panel de Google Apps Script permite modificar precios y duraciones. -->
+    <div class="service-grid" id="crServicesGrid">
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">01 /</div><h3>Corte</h3><p class="cr-service-price">$18.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">02 /</div><h3>Corte + Barba</h3><p class="cr-service-price">$23.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">03 /</div><h3>Barba</h3><p class="cr-service-price">$12.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">04 /</div><h3>Rapado</h3><p class="cr-service-price">$12.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">05 /</div><h3>Rapado + Barba</h3><p class="cr-service-price">$15.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">06 /</div><h3>Claritos</h3><p class="cr-service-price">$60.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">07 /</div><h3>Global con corte</h3><p class="cr-service-price">Desde $65.000</p><a href="#turnos">RESERVAR ↗</a></article>
+      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">08 /</div><h3>Global sin corte</h3><p class="cr-service-price">$55.000</p><a href="#turnos">RESERVAR ↗</a></article>
     </div>
-    <p class="note">
-     Servicios de ejemplo: confirmar catálogo, duración y precios con la barbería.
-    </p>
+    <!-- El catálogo de Apps Script reemplaza estas tarjetas al configurar la URL. -->
+    <div id="crCatalogLive" class="cr-catalog-live" hidden></div>
    </section>
 
    <!-- ==================================================
@@ -306,52 +260,13 @@
      <p>
       Elegí tu servicio y coordiná tu próxima visita. Sin vueltas.
      </p>
-     <div class="booking-box">
-      <div class="booking-step">
-       <span>
-        01
-       </span>
-       <div>
-        <b>
-         Elegí el servicio
-        </b>
-        <small>
-         Seleccioná qué querés hacerte
-        </small>
-       </div>
+     <!-- FASE 2 | La agenda se sirve desde Apps Script: evita problemas CORS con Netlify. -->
+     <div class="booking-box cr-booking-host">
+      <div id="crBookingSetup" class="cr-booking-setup">
+       <p>La reserva online estará disponible al conectar Google Apps Script.</p>
+       <a class="btn full" href="https://wa.me/5491138694111" target="_blank" rel="noopener noreferrer">CONSULTAR POR WHATSAPP ↗</a>
       </div>
-      <div class="booking-step">
-       <span>
-        02
-       </span>
-       <div>
-        <b>
-         Elegí fecha y horario
-        </b>
-        <small>
-         Consultá la disponibilidad
-        </small>
-       </div>
-      </div>
-      <div class="booking-step">
-       <span>
-        03
-       </span>
-       <div>
-        <b>
-         Confirmá tu turno
-        </b>
-        <small>
-         Todo listo para tu visita
-        </small>
-       </div>
-      </div>
-      <a class="btn full" href="#contacto" id="bookingLink">
-       CONSULTAR TURNO POR WHATSAPP ↗
-      </a>
-      <small class="booking-hint">
-       Por ahora los turnos se consultan por WhatsApp. La disponibilidad debe confirmarla la barbería.
-      </small>
+      <iframe id="crBookingFrame" title="Reservar turno en Cristo Rey Barber" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
      </div>
     </div>
     <div class="booking-visual">
@@ -463,6 +378,9 @@
    <img alt="Trabajo de barbería ampliado" id="lightboxImage"/>
   </dialog>
   <!-- JAVASCRIPT | Interacciones de la web -->
+  <!-- FASE 2 | URL pública de la aplicación web de Google Apps Script -->
+  <script src="js/booking-config.js"></script>
+  <script src="js/booking-embed.js"></script>
   <script src="js/script.js">
   </script>
  </body>

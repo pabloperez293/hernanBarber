@@ -89,6 +89,8 @@ const links = {
 };
 Object.entries(links).forEach(([id, url]) => {
   const a = document.getElementById(id);
+  // Fase 2: el botón antiguo de WhatsApp fue reemplazado por la agenda.
+  if (!a) return;
   if (!url) {
     a.setAttribute("aria-disabled", "true");
     a.title = "Próximamente: falta configurar el enlace oficial";

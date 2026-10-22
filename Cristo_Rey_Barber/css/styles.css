@@ -1185,3 +1185,15 @@ dialog button {
   .hernan-photo img {
     transition:none
   }
+
+/* ==========================================================
+   FASE 2 | Componentes nuevos del catálogo y agenda
+   Los estilos originales de la web permanecen intactos.
+   ========================================================== */
+.cr-service-price {color:#D3AF5B;font-weight:700;font-size:1.18rem}
+.cr-catalog-live[hidden],#crBookingFrame[hidden]{display:none!important}
+.cr-catalog-live iframe {display:block;width:100%;min-height:740px;border:0;background:transparent}
+.cr-booking-host {width:100%;min-width:0}
+.cr-booking-host iframe {display:block;width:100%;height:840px;border:0;border-radius:12px;background:#042C2E}
+.cr-booking-setup p {margin:0 0 16px}
+@media(max-width:700px){.cr-booking-host iframe{height:1050px}.cr-catalog-live iframe{min-height:1260px}}
