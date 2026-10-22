@@ -1,4 +1,9 @@
-/** FASE 2 | Configuración pública: pegá solamente la URL /exec. */
+
+/**
+ * CRISTO REY BARBER SHOP
+ * 01 | Configuración pública de Google Apps Script
+ */
+
 window.CRISTO_REY_BOOKING = Object.freeze({
-  appsScriptUrl: 'https://script.google.com/macros/s/AKfycbz8u0mDzx4cUCDpeGJr2eBRsOqJq6h9AR1mygNNHF6h-i-cQW6EFptsvRUNi_C3f0RV/exec' // Ejemplo: https://script.google.com/macros/s/XXXXX/exec
+  appsScriptUrl: "https://script.google.com/macros/s/AKfycbyfEajahBwL9LzMOAlO0nR0QkJmfIBFC898puPf9lC1vZmk2i-MsnVxsVKd5UkshfE8/exec"
 });

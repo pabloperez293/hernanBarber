@@ -106,31 +106,35 @@
     // 04 | ABRIR RESERVAS EN LA MISMA PESTAÑA
     let navegando = false;
 
-    function abrirReservas(evento) {
-      if (evento) {
-        if (
-          evento.defaultPrevented ||
-          evento.button !== 0 ||
-          evento.ctrlKey ||
-          evento.metaKey ||
-          evento.shiftKey ||
-          evento.altKey
-        )
-          return;
+   
+function abrirReservas(evento) {
+  if (
+    evento &&
+    (evento.button !== 0 ||
+      evento.ctrlKey ||
+      evento.metaKey ||
+      evento.shiftKey ||
+      evento.altKey)
+  ) {
+    return;
+  }
 
-        evento.preventDefault();
-      }
+  if (evento) evento.preventDefault();
+  if (navegando) return;
 
-      if (navegando) return;
-      navegando = true;
+  navegando = true;
 
-      overlay.style.visibility = "visible";
-      overlay.style.opacity = "1";
+  overlay.style.visibility = "visible";
+  overlay.style.opacity = "1";
 
-      setTimeout(() => {
-        window.location.assign(bookingUrl);
-      }, 850);
-    }
+  const destino = new URL(bookingUrl);
+  destino.searchParams.set("view", "booking");
+
+  setTimeout(() => {
+    window.location.assign(destino.toString());
+  }, 850);
+}
+
 
     // 05 | BOTÓN PRINCIPAL
     if (fallback) {
