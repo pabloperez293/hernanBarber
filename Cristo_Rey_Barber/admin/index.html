@@ -27,14 +27,41 @@
       <section class="card" id="loginPanel">
         <h2>Acceso privado</h2>
         <form id="loginForm">
-          <label for="password">Contraseña de administrador</label
-          ><input
-            id="password"
-            type="password"
-            autocomplete="current-password"
-            required
-          />
-          <p><button type="submit">INGRESAR</button></p>
+          <label for="password">Contraseña de administrador</label>
+          <div class="password-wrap">
+            <input
+              id="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            /><button
+              type="button"
+              id="togglePassword"
+              class="password-toggle"
+              aria-label="Mostrar contraseña"
+              aria-pressed="false"
+            >
+              Mostrar
+            </button>
+          </div>
+          <p>
+            <button id="loginSubmit" type="submit">
+              <span id="loginButtonText">INGRESAR</span
+              ><span
+                id="loginSpinner"
+                class="login-spinner hidden"
+                aria-hidden="true"
+              ></span>
+            </button>
+          </p>
+          <p
+            id="loginProgress"
+            class="login-progress hidden"
+            role="status"
+            aria-live="polite"
+          >
+            Conectando con la administración…
+          </p>
         </form>
       </section>
 

@@ -60,18 +60,54 @@ function nombreDe(items, id) {
 }
 
 // 10 | INICIAR / CERRAR SESIÓN
+// Mostrar u ocultar la contraseña sin modificar su valor.
+$("togglePassword").addEventListener("click", () => {
+  const input = $("password");
+  const visible = input.type === "password";
+  input.type = visible ? "text" : "password";
+  $("togglePassword").textContent = visible ? "Ocultar" : "Mostrar";
+  $("togglePassword").setAttribute("aria-pressed", String(visible));
+  $("togglePassword").setAttribute(
+    "aria-label",
+    visible ? "Ocultar contraseña" : "Mostrar contraseña",
+  );
+});
+function loginCargando(loading, message = "Conectando con la administración…") {
+  $("loginSubmit").disabled = loading;
+  $("password").disabled = loading;
+  $("loginButtonText").textContent = loading ? "CONECTANDO…" : "INGRESAR";
+  $("loginSpinner").classList.toggle("hidden", !loading);
+  $("loginProgress").classList.toggle("hidden", !loading);
+  $("loginProgress").textContent = message;
+  $("loginForm").setAttribute("aria-busy", String(loading));
+}
 $("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  if ($("loginSubmit").disabled) return;
+  loginCargando(true);
+  aviso("Conectando de forma segura…");
+  let progressTimer;
   try {
+    progressTimer = setTimeout(
+      () => loginCargando(true, "Verificando acceso y cargando los datos…"),
+      1800,
+    );
     token = await api("loginAdmin", $("password").value);
     $("password").value = "";
+    $("password").type = "password";
+    $("togglePassword").textContent = "Mostrar";
+    $("togglePassword").setAttribute("aria-pressed", "false");
+    $("togglePassword").setAttribute("aria-label", "Mostrar contraseña");
     await cargar();
     $("loginPanel").classList.add("hidden");
     $("dashboard").classList.remove("hidden");
     aviso("Sesión iniciada.");
   } catch (err) {
     token = "";
-    aviso(err.message, true);
+    aviso(err.message || "No fue posible conectar. Intentá nuevamente.", true);
+  } finally {
+    clearTimeout(progressTimer);
+    loginCargando(false);
   }
 });
 $("salir").addEventListener("click", async () => {

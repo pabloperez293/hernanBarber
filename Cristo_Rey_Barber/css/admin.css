@@ -403,3 +403,83 @@ button.secondary {
     bottom: 4px;
   }
 }
+
+/* 14 | Acceso responsive: mostrar contraseña y estado de conexión */
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.password-wrap input {
+  padding-right: 105px;
+  min-width: 0;
+}
+.password-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 9px 12px;
+  min-height: 36px;
+  background: #244e50 !important;
+  color: #f6f3e9 !important;
+  border: 1px solid #547373 !important;
+  border-radius: 7px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.password-toggle:focus-visible,
+#loginSubmit:focus-visible {
+  outline: 2px solid #d3af5b;
+  outline-offset: 3px;
+}
+#loginSubmit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+}
+#loginSubmit:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+.login-spinner {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(4, 44, 46, 0.28);
+  border-top-color: #042c2e;
+  border-radius: 50%;
+  animation: cr-spin 0.75s linear infinite;
+}
+.login-progress {
+  font-size: 13px;
+  color: #e2c887;
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+@keyframes cr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-spinner {
+    animation: none;
+    border-top-color: #042c2e;
+  }
+}
+@media (max-width: 480px) {
+  .password-toggle {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .password-wrap input {
+    padding-right: 95px;
+  }
+  #loginSubmit {
+    width: 100%;
+  }
+}
