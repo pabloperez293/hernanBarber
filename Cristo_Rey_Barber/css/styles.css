@@ -8,7 +8,7 @@
   --green:#042C2E;
   --gold:#D3AF5B;
   --cream:#f2efe8;
-  --ink:#071b1c
+  --ink:#071b1c;
 }
 
 * {
@@ -501,7 +501,7 @@ img {
 .statement {
   text-align:center;
   padding:120px 20px;
-  background:linear-gradient(#042c2eea,#042c2ef0),url("../assets/images/jesusFondo.jpg") center/cover;
+  background:linear-gradient(grey, grey),url("../assets/images/jesusFondo.jpg") center/cover;
   color:white
 }
 

@@ -130,7 +130,45 @@
      ✦ CORTES CON ESTILO    ✦ PRECISIÓN EN CADA DETALLE    ✦ CRISTO REY BARBER SHOP    ✦ CORTES CON ESTILO    ✦ PRECISIÓN EN CADA DETALLE    ✦ CRISTO REY BARBER SHOP
     </div>
    </div>
-
+   <!-- ==================================================
+ 06 | TURNOS: consulta por WhatsApp (futura integración Apps Script)
+ ================================================== -->
+   <section class="section booking" id="turnos">
+    <div class="booking-content reveal">
+     <span class="overline">
+      ✦ TU PRÓXIMO CORTE
+     </span>
+     <h2>
+      RESERVÁ TU
+      <em>
+       LUGAR.
+      </em>
+     </h2>
+     <p>
+      Seleccioná tu servicio, elegí un horario disponible y confirmá en minutos.
+     </p>
+     <!-- RESERVAS NETLIFY | Formulario compacto; datos reales de Google Sheets -->
+     <div class="booking-box cr-booking-host" id="crBookingApp">
+      <form id="crForm" class="cr-form">
+       <div class="cr-form-row">
+        <div class="cr-field"><label for="crServicio">1. Servicio</label><select id="crServicio" required><option value="">Cargando servicios...</option></select><p id="crDetalle" class="cr-hint" aria-live="polite"></p></div>
+        <div class="cr-field"><label for="crBarbero">2. Profesional</label><select id="crBarbero" required><option value="">Elegí un servicio</option></select></div>
+       </div>
+       <div class="cr-field"><span class="cr-label" id="crFechaLabel">3. Elegí la fecha</span><input type="hidden" id="crFecha"><div class="cr-calendar" aria-labelledby="crFechaLabel"><div class="cr-calendar-head"><button type="button" id="crPrev" aria-label="Mes anterior">‹</button><strong id="crMonth" aria-live="polite"></strong><button type="button" id="crNext" aria-label="Mes siguiente">›</button></div><div id="crDays" class="cr-days" role="group" aria-label="Seleccionar fecha"></div><p id="crDateHint" class="cr-hint">Elegí una fecha. Lunes y domingos cerrado.</p></div></div>
+       <div class="cr-field"><span class="cr-label">4. Horarios disponibles</span><div id="crSlots" class="cr-slots" role="group" aria-label="Horarios disponibles"></div><p id="crSlotHint" class="cr-hint">Elegí servicio, profesional y fecha.</p></div>
+       <div class="cr-form-row cr-personal-row">
+        <div class="cr-field"><label for="crNombre">5. Tu nombre</label><input id="crNombre" maxlength="80" autocomplete="name" required placeholder="Nombre y apellido"></div>
+        <div class="cr-field"><label for="crTelefono">6. WhatsApp</label><input id="crTelefono" type="tel" maxlength="20" autocomplete="tel" placeholder="Ej.: 11 3869 4111" required></div>
+       </div>
+       <button class="cr-submit" type="submit" id="crConfirm" disabled>CONFIRMAR TURNO ↗</button>
+       <div id="crMessage" class="cr-message" role="status" aria-live="polite" hidden></div>
+      </form>
+     </div>
+    </div>
+    <div class="booking-visual">
+     <img alt="Corte realizado por Cristo Rey Barber" loading="lazy" src="assets/images/galeriaFotos1.jpg"/>
+    </div>
+   </section>
       <!-- ==================================================
  03 | GALERÍA: carrusel automático y fotos ampliables
  ================================================== -->
@@ -206,45 +244,7 @@
     </div>
    </section>
 
-   <!-- ==================================================
- 06 | TURNOS: consulta por WhatsApp (futura integración Apps Script)
- ================================================== -->
-   <section class="section booking" id="turnos">
-    <div class="booking-content reveal">
-     <span class="overline">
-      ✦ TU PRÓXIMO CORTE
-     </span>
-     <h2>
-      RESERVÁ TU
-      <em>
-       LUGAR.
-      </em>
-     </h2>
-     <p>
-      Seleccioná tu servicio, elegí un horario disponible y confirmá en minutos.
-     </p>
-     <!-- RESERVAS NETLIFY | Formulario compacto; datos reales de Google Sheets -->
-     <div class="booking-box cr-booking-host" id="crBookingApp">
-      <form id="crForm" class="cr-form">
-       <div class="cr-form-row">
-        <div class="cr-field"><label for="crServicio">1. Servicio</label><select id="crServicio" required><option value="">Cargando servicios...</option></select><p id="crDetalle" class="cr-hint" aria-live="polite"></p></div>
-        <div class="cr-field"><label for="crBarbero">2. Profesional</label><select id="crBarbero" required><option value="">Elegí un servicio</option></select></div>
-       </div>
-       <div class="cr-field"><span class="cr-label" id="crFechaLabel">3. Elegí la fecha</span><input type="hidden" id="crFecha"><div class="cr-calendar" aria-labelledby="crFechaLabel"><div class="cr-calendar-head"><button type="button" id="crPrev" aria-label="Mes anterior">‹</button><strong id="crMonth" aria-live="polite"></strong><button type="button" id="crNext" aria-label="Mes siguiente">›</button></div><div id="crDays" class="cr-days" role="group" aria-label="Seleccionar fecha"></div><p id="crDateHint" class="cr-hint">Elegí una fecha. Lunes y domingos cerrado.</p></div></div>
-       <div class="cr-field"><span class="cr-label">4. Horarios disponibles</span><div id="crSlots" class="cr-slots" role="group" aria-label="Horarios disponibles"></div><p id="crSlotHint" class="cr-hint">Elegí servicio, profesional y fecha.</p></div>
-       <div class="cr-form-row cr-personal-row">
-        <div class="cr-field"><label for="crNombre">5. Tu nombre</label><input id="crNombre" maxlength="80" autocomplete="name" required placeholder="Nombre y apellido"></div>
-        <div class="cr-field"><label for="crTelefono">6. WhatsApp</label><input id="crTelefono" type="tel" maxlength="20" autocomplete="tel" placeholder="Ej.: 11 3869 4111" required></div>
-       </div>
-       <button class="cr-submit" type="submit" id="crConfirm" disabled>CONFIRMAR TURNO ↗</button>
-       <div id="crMessage" class="cr-message" role="status" aria-live="polite" hidden></div>
-      </form>
-     </div>
-    </div>
-    <div class="booking-visual">
-     <img alt="Corte realizado por Cristo Rey Barber" loading="lazy" src="assets/images/galeriaFotos1.jpg"/>
-    </div>
-   </section>
+
 
       <!-- ==================================================
  05 | HERNÁN: perfil, fotografía y degradado
