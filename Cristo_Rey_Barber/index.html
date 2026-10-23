@@ -20,7 +20,8 @@
   <script type="application/ld+json">
    {"@context":"https://schema.org","@type":"Barbershop","name":"Cristo Rey Barber Shop","image":"assets/images/LogoCristoreybarber.jpg","description":"Barbería con reserva de turnos online."}
   </script>
- </head>
+  <link rel="stylesheet" href="css/booking.css">
+</head>
  <body>
   <!-- PRELOADER | Animación de carga -->
   <div aria-label="Cargando Cristo Rey Barber" class="loader" id="loader">
@@ -48,9 +49,6 @@
    <nav id="nav">
     <a href="#inicio">
      Inicio
-    </a>
-    <a href="#servicios">
-     Servicios
     </a>
     <a href="#galeria">
      Galería
@@ -188,41 +186,6 @@
     </div>
    </section>
    <!-- ==================================================
- 02 | SERVICIOS: tarjetas de cortes
- ================================================== -->
-   <section class="section" id="servicios">
-    <div class="section-top reveal">
-     <div>
-      <span class="overline">
-       ✦ LO QUE HACEMOS
-      </span>
-      <h2>
-       NUESTROS
-       <em>
-        SERVICIOS
-       </em>
-      </h2>
-     </div>
-     <p>
-      Encontrá el estilo que mejor va con vos. Cada detalle cuenta.
-     </p>
-    </div>
-    <!-- FASE 2 | Catálogo inicial. El panel de Google Apps Script permite modificar precios y duraciones. -->
-    <div class="service-grid" id="crServicesGrid">
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">01 /</div><h3>Corte</h3><p class="cr-service-price">$18.000</p><a href="#turnos" target="_blank" rel="noopener noreferrer">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">02 /</div><h3>Corte + Barba</h3><p class="cr-service-price">$23.000</p><a href="#turnos">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">03 /</div><h3>Barba</h3><p class="cr-service-price">$12.000</p><a href="#turnos">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">04 /</div><h3>Rapado</h3><p class="cr-service-price">$12.000</p><a href="#turnos">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">05 /</div><h3>Rapado + Barba</h3><p class="cr-service-price">$15.000</p><a href="#turnos">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">06 /</div><h3>Claritos</h3><p class="cr-service-price">$60.000</p><a href="#turnos">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">07 /</div><h3>Global con corte</h3><p class="cr-service-price">Desde $65.000</p><a href="#turnos">RESERVAR ↗</a></article>
-      <article class="service reveal"><span class="service-icon">✂</span><div class="service-num">08 /</div><h3>Global sin corte</h3><p class="cr-service-price">$55.000</p><a href="#turnos">RESERVAR ↗</a></article>
-    </div>
-    <!-- El catálogo de Apps Script reemplaza estas tarjetas al configurar la URL. -->
-    <div id="crCatalogLive" class="cr-catalog-live" hidden></div>
-   </section>
-
-   <!-- ==================================================
  04 | IDENTIDAD: mensaje de la barbería
  ================================================== -->
    <section class="statement">
@@ -258,14 +221,24 @@
       </em>
      </h2>
      <p>
-      Elegí tu servicio y coordiná tu próxima visita. Sin vueltas.
+      Seleccioná tu servicio, elegí un horario disponible y confirmá en minutos.
      </p>
-     <!-- FASE 2 | La agenda se sirve desde Apps Script: evita problemas CORS con Netlify. -->
-     <div class="booking-box cr-booking-host">
-      <div id="crBookingSetup" class="cr-booking-setup">
-       <p>La reserva online estará disponible al conectar Google Apps Script.</p>
-      </div>
-      <iframe id="crBookingFrame" title="Reservar turno en Cristo Rey Barber" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+     <!-- RESERVAS NETLIFY | Formulario compacto; datos reales de Google Sheets -->
+     <div class="booking-box cr-booking-host" id="crBookingApp">
+      <form id="crForm" class="cr-form">
+       <div class="cr-form-row">
+        <div class="cr-field"><label for="crServicio">1. Servicio</label><select id="crServicio" required><option value="">Cargando servicios...</option></select><p id="crDetalle" class="cr-hint" aria-live="polite"></p></div>
+        <div class="cr-field"><label for="crBarbero">2. Profesional</label><select id="crBarbero" required><option value="">Elegí un servicio</option></select></div>
+       </div>
+       <div class="cr-field"><span class="cr-label" id="crFechaLabel">3. Elegí la fecha</span><input type="hidden" id="crFecha"><div class="cr-calendar" aria-labelledby="crFechaLabel"><div class="cr-calendar-head"><button type="button" id="crPrev" aria-label="Mes anterior">‹</button><strong id="crMonth" aria-live="polite"></strong><button type="button" id="crNext" aria-label="Mes siguiente">›</button></div><div id="crDays" class="cr-days" role="group" aria-label="Seleccionar fecha"></div><p id="crDateHint" class="cr-hint">Elegí una fecha. Lunes y domingos cerrado.</p></div></div>
+       <div class="cr-field"><span class="cr-label">4. Horarios disponibles</span><div id="crSlots" class="cr-slots" role="group" aria-label="Horarios disponibles"></div><p id="crSlotHint" class="cr-hint">Elegí servicio, profesional y fecha.</p></div>
+       <div class="cr-form-row cr-personal-row">
+        <div class="cr-field"><label for="crNombre">5. Tu nombre</label><input id="crNombre" maxlength="80" autocomplete="name" required placeholder="Nombre y apellido"></div>
+        <div class="cr-field"><label for="crTelefono">6. WhatsApp</label><input id="crTelefono" type="tel" maxlength="20" autocomplete="tel" placeholder="Ej.: 11 3869 4111" required></div>
+       </div>
+       <button class="cr-submit" type="submit" id="crConfirm" disabled>CONFIRMAR TURNO ↗</button>
+       <div id="crMessage" class="cr-message" role="status" aria-live="polite" hidden></div>
+      </form>
      </div>
     </div>
     <div class="booking-visual">
@@ -377,9 +350,9 @@
    <img alt="Trabajo de barbería ampliado" id="lightboxImage"/>
   </dialog>
   <!-- JAVASCRIPT | Interacciones de la web -->
-  <!-- FASE 2 | URL pública de la aplicación web de Google Apps Script -->
-  <script src="js/booking-config.js"></script>
-  <script src="js/booking-embed.js"></script>
+  <!-- RESERVAS NETLIFY | Sin redirección ni iframe de Google -->
+  <script src="js/booking-api.js" defer></script>
+  <script src="js/booking.js" defer></script>
   <script src="js/script.js">
   </script>
  </body>

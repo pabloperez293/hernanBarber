@@ -1,173 +1,203 @@
-/* CRISTO REY | Formulario de reservas integrado */
-#crBookingApp {
+/* =============================================================
+   CRISTO REY | RESERVAS COMPACTAS
+   Aisladas de los estilos globales de la landing.
+   ============================================================= */
+#turnos.booking {
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  gap: 4%;
+  align-items: start;
+}
+#turnos .booking-content {
+  min-width: 0;
+}
+#turnos .booking-box#crBookingApp {
   width: 100%;
   min-width: 0;
+  max-width: none;
+  margin-top: 18px;
+  padding: 24px;
+  background: #042c2e;
   color: #f4f1e9;
-  font-family: Arial, sans-serif;
+  border: 1px solid #315b5d;
+  border-radius: 16px;
+  box-shadow: 0 16px 35px #042c2e18;
 }
+#crBookingApp,
 #crBookingApp * {
   box-sizing: border-box;
 }
-.cr-form {
+#crBookingApp .cr-form {
   width: 100%;
-  max-width: 640px;
+  max-width: none;
 }
-.cr-field {
-  margin-bottom: 18px;
+#crBookingApp .cr-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+#crBookingApp .cr-field {
   min-width: 0;
+  margin-bottom: 14px;
 }
-.cr-field label,
-.cr-label {
+#crBookingApp .cr-field label,
+#crBookingApp .cr-label {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
   color: #f4f1e9;
 }
-.cr-field select,
-.cr-field input:not([type="hidden"]) {
+#crBookingApp .cr-field select,
+#crBookingApp .cr-field input:not([type="hidden"]) {
+  display: block;
   width: 100%;
-  max-width: 100%;
-  padding: 13px 12px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
   background: #103d3f;
   border: 1px solid #53706e;
   border-radius: 8px;
   color: #fff;
   font: inherit;
-  min-height: 46px;
+  font-size: 14px;
 }
-.cr-field select option {
+#crBookingApp select option {
   background: #103d3f;
-  color: white;
+  color: #fff;
 }
-.cr-hint {
-  font-size: 13px;
+#crBookingApp .cr-hint {
+  font-size: 12px;
   color: #c0d1cb;
-  margin: 9px 0 0;
-  line-height: 1.5;
+  margin: 7px 0 0;
+  line-height: 1.4;
 }
-.cr-calendar {
+#crBookingApp .cr-calendar {
   width: 100%;
+  max-width: none;
   min-width: 0;
-  max-width: 440px;
   background: linear-gradient(145deg, #103e40, #082f31);
   border: 1px solid #4e6868;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 12px;
 }
-.cr-calendar-head {
+#crBookingApp .cr-calendar-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
-.cr-calendar-head strong {
+#crBookingApp .cr-calendar-head strong {
   color: #f4f1e9;
-  font-size: 15px;
+  font-size: 14px;
   text-align: center;
   text-transform: capitalize;
 }
-.cr-calendar-head button {
-  flex: 0 0 38px;
-  height: 38px;
+#crBookingApp .cr-calendar-head button {
+  flex: 0 0 34px;
+  height: 34px;
   background: #164547;
   color: #d3af5b;
   border: 1px solid #527270;
-  border-radius: 9px;
-  font-size: 24px;
+  border-radius: 8px;
+  font-size: 22px;
   cursor: pointer;
 }
-.cr-calendar-head button:disabled {
+#crBookingApp .cr-calendar-head button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
-.cr-days {
+#crBookingApp .cr-days {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
   min-width: 0;
 }
-.cr-weekday {
+#crBookingApp .cr-weekday {
   text-align: center;
   color: #d3af5b;
   font-size: 11px;
   font-weight: 800;
-  padding: 7px 0;
+  padding: 5px 0;
 }
-.cr-day {
+#crBookingApp .cr-day {
+  display: grid;
+  place-items: center;
   width: 100%;
   min-width: 0;
-  aspect-ratio: 1;
-  min-height: 0;
+  min-height: 33px;
+  aspect-ratio: 1.2/1;
   background: #164547;
   color: #fff;
   border: 1px solid transparent;
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   padding: 0;
 }
-.cr-day:disabled {
+#crBookingApp .cr-day:disabled {
   background: transparent;
   color: #7d9692;
   opacity: 0.45;
   cursor: not-allowed;
 }
-.cr-day[aria-pressed="true"] {
+#crBookingApp .cr-day[aria-pressed="true"] {
   background: #d3af5b;
   color: #042c2e;
   font-weight: 800;
 }
-.cr-day.today:not([aria-pressed="true"]) {
+#crBookingApp .cr-day.today:not([aria-pressed="true"]) {
   border-color: #d3af5b;
 }
-.cr-slots {
+#crBookingApp .cr-slots {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
 }
-.cr-slot {
-  padding: 12px 6px;
+#crBookingApp .cr-slot {
+  min-width: 0;
+  padding: 10px 4px;
   background: #0b383a;
   color: #fff;
   border: 1px solid #69807c;
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
+  font-size: 13px;
 }
-.cr-slot[aria-pressed="true"] {
+#crBookingApp .cr-slot[aria-pressed="true"] {
   background: #d3af5b;
   color: #042c2e;
   font-weight: 800;
 }
-.cr-submit {
+#crBookingApp .cr-submit {
   width: 100%;
-  padding: 15px;
+  padding: 14px;
   border: 0;
   border-radius: 8px;
   background: #d3af5b;
   color: #042c2e;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
 }
-.cr-submit:disabled {
+#crBookingApp .cr-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.cr-message {
+#crBookingApp .cr-message {
   white-space: pre-wrap;
-  margin-top: 15px;
-  padding: 13px;
+  margin-top: 12px;
+  padding: 12px;
   border-radius: 8px;
   background: #153e40;
-  line-height: 1.6;
+  line-height: 1.5;
+  font-size: 13px;
 }
-.cr-message.error {
+#crBookingApp .cr-message.error {
   border: 1px solid #e6a1a1;
   color: #ffe5e5;
 }
-.cr-message.success {
+#crBookingApp .cr-message.success {
   border: 1px solid #d3af5b;
   color: #f8eac5;
 }
@@ -177,20 +207,64 @@
   outline: 2px solid #d3af5b;
   outline-offset: 2px;
 }
-@media (max-width: 540px) {
-  .cr-calendar {
-    padding: 8px;
+#turnos .booking-visual img {
+  width: 100%;
+  height: min(710px, 75vh);
+  object-fit: cover;
+  border-radius: 12px;
+}
+@media (max-width: 900px) {
+  #turnos.booking {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+    gap: 18px;
   }
-  .cr-days {
-    gap: 2px;
+  #turnos .booking-box#crBookingApp {
+    padding: 17px;
   }
-  .cr-day {
-    font-size: 12px;
+  #crBookingApp .cr-form-row {
+    grid-template-columns: 1fr;
   }
-  .cr-slots {
+  #crBookingApp .cr-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  #turnos.booking {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #turnos .booking-visual {
+    display: none;
+  }
+  #turnos .booking-box#crBookingApp {
+    padding: 18px;
+    margin-top: 15px;
+  }
+  #crBookingApp .cr-form-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .cr-calendar-head strong {
-    font-size: 14px;
+  #crBookingApp .cr-day {
+    min-height: 36px;
+  }
+}
+@media (max-width: 460px) {
+  #turnos .booking-box#crBookingApp {
+    padding: 13px;
+  }
+  #crBookingApp .cr-form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  #crBookingApp .cr-calendar {
+    padding: 8px;
+  }
+  #crBookingApp .cr-days {
+    gap: 2px;
+  }
+  #crBookingApp .cr-day {
+    min-height: 30px;
+    font-size: 11px;
+  }
+  #crBookingApp .cr-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
