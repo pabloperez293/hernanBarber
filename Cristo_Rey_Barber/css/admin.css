@@ -1,0 +1,405 @@
+/* 01 | IDENTIDAD VISUAL Y DISEÑO RESPONSIVE — CRISTO REY */
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #f6f3e9;
+  background: #042c2e;
+  color-scheme: dark;
+  --bg: #042c2e;
+  --panel: #103d3f;
+  --panel2: #0b3335;
+  --line: #315b5d;
+  --gold: #d3af5b;
+  --muted: #c6d7d4;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-width: 0;
+  padding: clamp(12px, 3vw, 32px);
+  background: radial-gradient(ellipse at top right, #174547 0%, #042c2e 55%);
+  min-height: 100vh;
+}
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  min-width: 0;
+}
+h1,
+h2 {
+  color: var(--gold);
+  line-height: 1.2;
+}
+h1 {
+  font-size: clamp(20px, 3.3vw, 29px);
+  letter-spacing: 0.035em;
+  margin: 0 0 18px;
+}
+h2 {
+  font-size: 19px;
+  margin: 0 0 16px;
+}
+p {
+  line-height: 1.5;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: clamp(16px, 2.6vw, 26px);
+  border-radius: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 25px #00191a22;
+  min-width: 0;
+}
+label {
+  display: block;
+  margin: 12px 0 7px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e4e8de;
+}
+input,
+select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid #547373;
+  border-radius: 9px;
+  background: #082e30;
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  outline-offset: 3px;
+}
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+button {
+  border: 0;
+  background: var(--gold);
+  color: var(--bg);
+  padding: 12px 16px;
+  min-height: 44px;
+  border-radius: 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease;
+  touch-action: manipulation;
+}
+button:hover {
+  filter: brightness(1.08);
+}
+button:active {
+  transform: translateY(1px);
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+button.secondary {
+  background: #244e50;
+  color: #fff;
+  border: 1px solid #547373;
+}
+.danger {
+  color: #ffc1c1;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 14px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.row > * {
+  min-width: 0;
+}
+.row > span,
+.row > p {
+  flex: 1 1 240px;
+  overflow-wrap: anywhere;
+}
+.row > button {
+  flex: 0 0 auto;
+}
+.small {
+  font-size: 13px;
+  color: var(--muted);
+}
+.item {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.item:last-child {
+  border-bottom: 0;
+}
+.hidden {
+  display: none !important;
+}
+.tabs {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #547373 transparent;
+  padding: 2px 1px 13px;
+  margin: 12px 0 16px;
+  scroll-snap-type: x proximity;
+}
+.tabs button {
+  flex: 1 0 auto;
+  white-space: nowrap;
+  scroll-snap-align: start;
+  background: #244e50;
+  color: #fff;
+  border: 1px solid #547373;
+  min-width: 120px;
+}
+.tabs button[aria-pressed="true"] {
+  background: var(--gold);
+  color: var(--bg);
+  border-color: var(--gold);
+}
+.status {
+  white-space: pre-wrap;
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #214e50;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+}
+.error {
+  color: #ffbaba;
+}
+#loginPanel {
+  max-width: 520px;
+  margin: 20px auto 0;
+}
+#loginPanel button {
+  min-width: 170px;
+}
+#dashboard > .row {
+  margin: 0 0 8px;
+}
+#dashboard > .row p {
+  margin: 6px 0;
+}
+#tab-servicios > h2:not(:first-child),
+#tab-barberos > h2:not(:first-child) {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+#tab-reservas #recargarReservas {
+  margin-bottom: 12px;
+}
+/* 02 | TABLETS */
+@media (max-width: 820px) {
+  .tabs button {
+    min-width: 110px;
+  }
+  .card {
+    border-radius: 13px;
+  }
+}
+/* 03 | CELULARES */
+@media (max-width: 600px) {
+  body {
+    padding: 12px 10px 24px;
+  }
+  h1 {
+    font-size: 21px;
+    margin: 6px 2px 15px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  .card {
+    padding: 16px 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+  .tabs {
+    margin: 8px -3px 13px;
+    gap: 7px;
+  }
+  .tabs button {
+    min-width: 105px;
+    padding: 11px 13px;
+    font-size: 13px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+  .row {
+    align-items: stretch;
+    gap: 9px;
+  }
+  .row > span,
+  .row > p {
+    flex-basis: 100%;
+  }
+  .item.row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .item.row button {
+    width: 100%;
+  }
+  #dashboard > .row {
+    display: flex;
+    align-items: center;
+  }
+  #dashboard > .row p {
+    flex: 1 1 150px;
+  }
+  #dashboard > .row button {
+    flex: 0 0 auto;
+  }
+  form p {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  form p button {
+    width: 100%;
+    margin: 0;
+  }
+  #loginPanel {
+    margin: 8px 0;
+  }
+  #loginPanel button {
+    width: 100%;
+  }
+  #tab-barberos > p button,
+  #tab-reservas > button {
+    width: 100%;
+  }
+  input,
+  select {
+    font-size: 16px;
+  }
+  .status {
+    font-size: 13px;
+  }
+}
+@media (max-width: 370px) {
+  #dashboard > .row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  #dashboard > .row button {
+    width: 100%;
+  }
+  .tabs button {
+    min-width: 100px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  button {
+    transition: none;
+  }
+}
+
+/* ADMIN NETLIFY | refinamientos responsivos */
+.admin-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.brand-lockup img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+}
+.brand-lockup h1 {
+  margin: 3px 0;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  font-weight: 800;
+}
+.home-link {
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.tabs button {
+  flex: 1 0 auto;
+}
+.item.row {
+  align-items: center;
+}
+.status {
+  position: sticky;
+  bottom: 10px;
+  z-index: 2;
+  box-shadow: 0 8px 25px #0005;
+}
+@media (max-width: 600px) {
+  .admin-brand {
+    align-items: flex-start;
+  }
+  .brand-lockup img {
+    width: 52px;
+    height: 52px;
+  }
+  .home-link {
+    width: 100%;
+    text-align: center;
+  }
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: #042c2e;
+    padding: 10px 0;
+  }
+  .tabs button {
+    min-width: 110px;
+  }
+  .status {
+    bottom: 4px;
+  }
+}

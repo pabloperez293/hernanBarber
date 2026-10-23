@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Administración | Cristo Rey Barber</title>
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+  <body>
+    <main>
+      <!-- 02 | ACCESO AL PANEL -->
+      <header class="admin-brand">
+        <div class="brand-lockup">
+          <img
+            src="/assets/images/LogoCristoreybarber.jpg"
+            alt="Logo Cristo Rey Barber"
+          />
+          <div>
+            <span class="eyebrow">CRISTO REY BARBER SHOP</span>
+            <h1>Panel administrativo</h1>
+            <span class="small">Gestión de turnos y equipo</span>
+          </div>
+        </div>
+        <a href="/" class="home-link">← Volver al sitio</a>
+      </header>
+      <section class="card" id="loginPanel">
+        <h2>Acceso privado</h2>
+        <form id="loginForm">
+          <label for="password">Contraseña de administrador</label
+          ><input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+          <p><button type="submit">INGRESAR</button></p>
+        </form>
+      </section>
+
+      <!-- 03 | MENÚ DE ADMINISTRACIÓN -->
+      <div id="dashboard" class="hidden">
+        <div class="row">
+          <p class="small">
+            Administrá servicios, barberos, horarios, ausencias y reservas.
+          </p>
+          <button id="salir" class="secondary">Cerrar sesión</button>
+        </div>
+        <nav class="tabs" aria-label="Secciones del panel" tabindex="0">
+          <button data-tab="servicios" aria-pressed="true">Servicios</button
+          ><button data-tab="barberos" aria-pressed="false">Barberos</button
+          ><button data-tab="horarios" aria-pressed="false">Horarios</button
+          ><button data-tab="ausencias" aria-pressed="false">Ausencias</button
+          ><button data-tab="reservas" aria-pressed="false">Reservas</button>
+        </nav>
+
+        <!-- 04 | SERVICIOS: agregar, editar, cambiar precios y activar/desactivar -->
+        <section class="card tab" id="tab-servicios">
+          <h2>Servicios y precios</h2>
+          <div id="listaServicios"></div>
+          <h2 id="tituloServicio">Nuevo servicio</h2>
+          <form id="formServicio">
+            <input type="hidden" id="sId" />
+            <div class="grid">
+              <div>
+                <label for="sNombre">Nombre</label
+                ><input id="sNombre" required maxlength="80" />
+              </div>
+              <div>
+                <label for="sDuracion">Duración (minutos)</label
+                ><input
+                  id="sDuracion"
+                  type="number"
+                  min="15"
+                  max="480"
+                  step="15"
+                  required
+                />
+              </div>
+              <div>
+                <label for="sPrecio">Precio (ARS)</label
+                ><input id="sPrecio" type="number" min="0" step="1" required />
+              </div>
+              <div>
+                <label for="sDesdePrecio">Tipo de precio</label
+                ><select id="sDesdePrecio">
+                  <option value="false">Precio fijo</option>
+                  <option value="true">Desde (variable)</option>
+                </select>
+              </div>
+              <div>
+                <label for="sActivo">Estado</label
+                ><select id="sActivo">
+                  <option value="true">Activo</option>
+                  <option value="false">Inactivo</option>
+                </select>
+              </div>
+            </div>
+            <p>
+              <button>Guardar servicio</button>
+              <button type="button" class="secondary" id="limpiarServicio">
+                Nuevo / limpiar
+              </button>
+            </p>
+          </form>
+        </section>
+
+        <!-- 05 | BARBEROS: alta, edición, baja lógica y asignación de servicios -->
+        <section class="card tab hidden" id="tab-barberos">
+          <h2>Barberos</h2>
+          <div id="listaBarberos"></div>
+          <h2>Agregar / editar barbero</h2>
+          <form id="formBarbero">
+            <input type="hidden" id="bId" />
+            <div class="grid">
+              <div>
+                <label for="bNombre">Nombre</label
+                ><input id="bNombre" required maxlength="80" />
+              </div>
+              <div>
+                <label for="bActivo">Estado</label
+                ><select id="bActivo">
+                  <option value="true">Activo</option>
+                  <option value="false">
+                    Inactivo (no recibe nuevos turnos)
+                  </option>
+                </select>
+              </div>
+            </div>
+            <p>
+              <button>Guardar barbero</button>
+              <button type="button" class="secondary" id="limpiarBarbero">
+                Nuevo / limpiar
+              </button>
+            </p>
+          </form>
+          <h2>Servicios que realiza cada barbero</h2>
+          <div class="grid">
+            <div>
+              <label for="asBarbero">Barbero</label
+              ><select id="asBarbero"></select>
+            </div>
+            <div>
+              <label for="asServicio">Servicio</label
+              ><select id="asServicio"></select>
+            </div>
+            <div>
+              <label for="asEstado">Asignación</label
+              ><select id="asEstado">
+                <option value="true">Puede realizarlo</option>
+                <option value="false">No puede realizarlo</option>
+              </select>
+            </div>
+          </div>
+          <p><button id="guardarAsignacion">Guardar asignación</button></p>
+        </section>
+
+        <!-- 06 | HORARIOS SEMANALES POR BARBERO -->
+        <section class="card tab hidden" id="tab-horarios">
+          <h2>Horario semanal</h2>
+          <p class="small">
+            Se configura por barbero y día. Lunes y domingo permanecen cerrados
+            salvo que los actives.
+          </p>
+          <form id="formHorario">
+            <div class="grid">
+              <div>
+                <label for="hBarbero">Barbero</label
+                ><select id="hBarbero"></select>
+              </div>
+              <div>
+                <label for="hDia">Día</label
+                ><select id="hDia">
+                  <option value="0">Domingo</option>
+                  <option value="1">Lunes</option>
+                  <option value="2">Martes</option>
+                  <option value="3">Miércoles</option>
+                  <option value="4">Jueves</option>
+                  <option value="5">Viernes</option>
+                  <option value="6">Sábado</option>
+                </select>
+              </div>
+              <div>
+                <label for="hDesde">Desde</label
+                ><input type="time" id="hDesde" value="09:00" required />
+              </div>
+              <div>
+                <label for="hHasta">Hasta</label
+                ><input type="time" id="hHasta" value="20:00" required />
+              </div>
+              <div>
+                <label for="hActivo">Estado</label
+                ><select id="hActivo">
+                  <option value="true">Abierto</option>
+                  <option value="false">Cerrado</option>
+                </select>
+              </div>
+            </div>
+            <p><button>Guardar horario</button></p>
+          </form>
+          <div id="listaHorarios"></div>
+        </section>
+
+        <!-- 07 | AUSENCIAS Y BLOQUEOS DE AGENDA -->
+        <section class="card tab hidden" id="tab-ausencias">
+          <h2>Ausencias / bloquear horarios</h2>
+          <form id="formAusencia">
+            <div class="grid">
+              <div>
+                <label for="aBarbero">Barbero</label
+                ><select id="aBarbero"></select>
+              </div>
+              <div>
+                <label for="aFecha">Fecha</label
+                ><input id="aFecha" type="date" required />
+              </div>
+              <div>
+                <label for="aDesde">Desde</label
+                ><input id="aDesde" type="time" value="09:00" required />
+              </div>
+              <div>
+                <label for="aHasta">Hasta</label
+                ><input id="aHasta" type="time" value="20:00" required />
+              </div>
+              <div>
+                <label for="aMotivo">Motivo (opcional)</label
+                ><input id="aMotivo" maxlength="120" />
+              </div>
+            </div>
+            <p><button>Bloquear horario</button></p>
+          </form>
+          <div id="listaAusencias"></div>
+        </section>
+
+        <!-- 08 | RESERVAS: consultar y cancelar -->
+        <section class="card tab hidden" id="tab-reservas">
+          <h2>Últimas reservas</h2>
+          <button id="recargarReservas" type="button" class="secondary">
+            Actualizar
+          </button>
+          <div id="listaReservas"></div>
+        </section>
+      </div>
+      <div
+        id="estado"
+        class="status hidden"
+        role="status"
+        aria-live="polite"
+      ></div>
+    </main>
+    <script src="/js/admin.js" defer></script>
+  </body>
+</html>
