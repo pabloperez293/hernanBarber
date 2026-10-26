@@ -539,3 +539,66 @@ button.secondary {
     padding-right: 104px;
   }
 }
+
+/* 14 | CRM */
+.crm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  margin: 10px 0;
+}
+.crm-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: #d3af5b;
+  color: #042c2e;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 13px;
+}
+.crm-phone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 12px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #315b5d;
+}
+.crm-phone label {
+  flex: 1 1 240px;
+}
+.crm-phone button {
+  flex: 0 0 auto;
+}
+.crm-table-wrap {
+  overflow-x: auto;
+}
+.crm-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 370px;
+}
+.crm-table th,
+.crm-table td {
+  padding: 12px;
+  border-bottom: 1px solid #315b5d;
+}
+.crm-table th {
+  color: #d3af5b;
+}
+@media (max-width: 600px) {
+  .crm-actions > * {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .crm-phone button {
+    width: 100%;
+  }
+}

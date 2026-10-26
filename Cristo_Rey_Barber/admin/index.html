@@ -78,7 +78,12 @@
           ><button data-tab="barberos" aria-pressed="false">Barberos</button
           ><button data-tab="horarios" aria-pressed="false">Horarios</button
           ><button data-tab="ausencias" aria-pressed="false">Ausencias</button
-          ><button data-tab="reservas" aria-pressed="false">Reservas</button>
+          ><button data-tab="reservas" aria-pressed="false">Reservas</button
+          ><button data-tab="recordatorios" aria-pressed="false">
+            Recordatorios</button
+          ><button data-tab="frecuentes" aria-pressed="false">
+            Clientes frecuentes</button
+          ><button data-tab="reportes" aria-pressed="false">Reportes</button>
         </nav>
 
         <!-- 04 | SERVICIOS: agregar, editar, cambiar precios y activar/desactivar -->
@@ -266,6 +271,41 @@
             Actualizar
           </button>
           <div id="listaReservas"></div>
+        </section>
+        <section class="card tab hidden" id="tab-recordatorios">
+          <h2>Recordatorios de WhatsApp</h2>
+          <p class="small">
+            Turnos de hoy y mañana. Abrí WhatsApp y, después de enviarlo, marcá
+            el recordatorio como enviado. La marca no verifica la entrega.
+          </p>
+          <button type="button" class="secondary" id="actualizarCRM">
+            Actualizar información
+          </button>
+          <div id="listaRecordatorios"></div>
+          <h2>WhatsApp de cada barbero</h2>
+          <p class="small">
+            Ingresá el número con código de país, por ejemplo 54911XXXXXXXX.
+          </p>
+          <div id="telefonosBarberos"></div>
+        </section>
+        <section class="card tab hidden" id="tab-frecuentes">
+          <h2>Clientes frecuentes</h2>
+          <p class="small">
+            Se consideran frecuentes desde 3 reservas pasadas no canceladas. No
+            equivale a asistencia confirmada.
+          </p>
+          <div id="resumenFrecuentes"></div>
+          <div id="listaFrecuentes"></div>
+        </section>
+        <section class="card tab hidden" id="tab-reportes">
+          <h2>Reporte de clientes nuevos</h2>
+          <p class="small">
+            Cliente nuevo = primera reserva registrada en el sistema,
+            independientemente de si fue cancelada. No se usa la fecha de alta
+            si no está disponible.
+          </p>
+          <div id="resumenReportes"></div>
+          <div id="listaReportes"></div>
         </section>
       </div>
       <div

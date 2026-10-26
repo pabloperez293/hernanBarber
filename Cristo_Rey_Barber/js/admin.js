@@ -47,6 +47,14 @@ async function ejecutar(fn) {
 async function cargar() {
   data = await api("getPanel", token);
   dibujar();
+  try {
+    await cargarCRM();
+  } catch (e) {
+    console.warn("CRM no disponible:", e.message);
+    $("listaRecordatorios").textContent =
+      "No se pudo cargar CRM. Verificá la instalación en Apps Script.";
+    aviso("Panel cargado, pero CRM no disponible: " + e.message, true);
+  }
 }
 function opciones(id, items) {
   const el = $(id),
@@ -297,3 +305,87 @@ $("recargarReservas").addEventListener("click", async () => {
     /* sin sesión: mostrar acceso */
   }
 })();
+
+// 14 | CRM: recordatorios manuales, clientes frecuentes y reportes.
+let crm = null;
+async function cargarCRM() {
+  crm = await api("getCRM", token);
+  dibujarCRM();
+}
+function waLink(phone, message) {
+  const digits = String(phone || "").replace(/\D/g, "");
+  return /^\d{10,15}$/.test(digits)
+    ? `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
+    : "";
+}
+function dibujarCRM() {
+  if (!crm) return;
+  const estado = crm.estados || {};
+  $("listaRecordatorios").innerHTML =
+    crm.recordatorios
+      .map((r) => {
+        const barber = nombreDe(data.barberos, r.barberoId);
+        const servicio = nombreDe(data.servicios, r.servicioId);
+        const textoCliente = `Hola ${r.nombre}, te recordamos tu turno en Cristo Rey Barber el ${r.fecha} a las ${r.hora} con ${barber} para ${servicio}. ¡Te esperamos!`;
+        const textoBarbero = `Hola ${barber}, recordatorio de turno: ${r.fecha} ${r.hora}, cliente ${r.nombre}, servicio ${servicio}.`;
+        const clienteUrl = waLink(r.telefono, textoCliente);
+        const barberoUrl = waLink(
+          (crm.telefonosBarberos || {})[r.barberoId],
+          textoBarbero,
+        );
+        const clienteOK = estado[r.id + "|cliente"];
+        const barberoOK = estado[r.id + "|barbero"];
+        return `<div class="item crm-recordatorio"><strong>${safe(r.fecha)} · ${safe(r.hora)} · ${safe(r.nombre)}</strong><p class="small">${safe(servicio)} · ${safe(barber)}</p><div class="crm-actions">${clienteUrl ? `<a class="crm-link" href="${clienteUrl}" target="_blank" rel="noopener noreferrer">Abrir WhatsApp cliente</a>` : '<span class="small">Teléfono del cliente inválido</span>'}<button type="button" class="secondary" data-reminder="${safe(r.id)}" data-recipient="cliente" ${clienteOK ? "disabled" : ""}>${clienteOK ? "Cliente: marcado enviado" : "Marcar cliente enviado"}</button>${barberoUrl ? `<a class="crm-link" href="${barberoUrl}" target="_blank" rel="noopener noreferrer">Abrir WhatsApp barbero</a>` : '<span class="small">Configurá WhatsApp del barbero</span>'}<button type="button" class="secondary" data-reminder="${safe(r.id)}" data-recipient="barbero" ${barberoOK || !barberoUrl ? "disabled" : ""}>${barberoOK ? "Barbero: marcado enviado" : "Marcar barbero enviado"}</button></div></div>`;
+      })
+      .join("") ||
+    '<p class="small">No hay turnos confirmados para hoy o mañana.</p>';
+  $("telefonosBarberos").innerHTML = data.barberos
+    .map(
+      (b) =>
+        `<form class="crm-phone" data-barber-phone="${safe(b.id)}"><label>${safe(b.nombre)}<input name="telefono" type="tel" autocomplete="off" placeholder="54911XXXXXXXX" value="${safe((crm.telefonosBarberos || {})[b.id] || "")}" /></label><button type="submit">Guardar número</button></form>`,
+    )
+    .join("");
+  $("resumenFrecuentes").textContent =
+    `${crm.frecuentes.length} clientes frecuentes (3 o más reservas pasadas no canceladas).`;
+  $("listaFrecuentes").innerHTML =
+    crm.frecuentes
+      .map(
+        (c) =>
+          `<div class="item"><strong>${safe(c.nombre)}</strong> · ${safe(c.telefono)} · ${c.visitas} reservas pasadas · Última: ${safe(c.ultima)}</div>`,
+      )
+      .join("") || '<p class="small">Todavía no hay clientes frecuentes.</p>';
+  $("resumenReportes").textContent =
+    `Clientes registrados: ${crm.totalClientes}. Se muestran las primeras reservas por mes.`;
+  $("listaReportes").innerHTML =
+    `<div class="crm-table-wrap"><table class="crm-table"><thead><tr><th>Mes</th><th>Clientes nuevos</th><th>Reservas registradas</th></tr></thead><tbody>${crm.reportes.map((x) => `<tr><td>${safe(x.mes)}</td><td>${x.nuevos}</td><td>${x.reservas}</td></tr>`).join("")}</tbody></table></div>`;
+}
+$("actualizarCRM").addEventListener("click", async () => {
+  try {
+    aviso("Actualizando reportes...");
+    await cargarCRM();
+    aviso("Datos actualizados.");
+  } catch (e) {
+    aviso(e.message, true);
+  }
+});
+$("listaRecordatorios").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-reminder]");
+  if (!b || !confirm("¿Confirmás que enviaste este mensaje por WhatsApp?"))
+    return;
+  await ejecutar(() =>
+    api("marcarRecordatorio", token, b.dataset.reminder, b.dataset.recipient),
+  );
+});
+$("telefonosBarberos").addEventListener("submit", async (e) => {
+  const form = e.target.closest("form[data-barber-phone]");
+  if (!form) return;
+  e.preventDefault();
+  await ejecutar(() =>
+    api(
+      "guardarTelefonoBarbero",
+      token,
+      form.dataset.barberPhone,
+      form.elements.telefono.value,
+    ),
+  );
+});
