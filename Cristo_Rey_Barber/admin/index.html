@@ -73,17 +73,60 @@
           </p>
           <button id="salir" class="secondary">Cerrar sesión</button>
         </div>
-        <nav class="tabs" aria-label="Secciones del panel" tabindex="0">
-          <button data-tab="servicios" aria-pressed="true">Servicios</button
-          ><button data-tab="barberos" aria-pressed="false">Barberos</button
-          ><button data-tab="horarios" aria-pressed="false">Horarios</button
-          ><button data-tab="ausencias" aria-pressed="false">Ausencias</button
-          ><button data-tab="reservas" aria-pressed="false">Reservas</button
-          ><button data-tab="recordatorios" aria-pressed="false">
-            Recordatorios</button
-          ><button data-tab="frecuentes" aria-pressed="false">
-            Clientes frecuentes</button
-          ><button data-tab="reportes" aria-pressed="false">Reportes</button>
+
+        <div class="admin-menu-bar">
+          <span class="admin-menu-title">Panel de gestión</span>
+
+          <button
+            id="abrirMenu"
+            class="admin-menu-toggle"
+            type="button"
+            aria-controls="menuAdministracion"
+            aria-expanded="false"
+          >
+            ☰
+          </button>
+        </div>
+
+        <div id="menuOverlay" class="admin-menu-overlay" hidden></div>
+
+        <nav
+          id="menuAdministracion"
+          class="tabs admin-side-menu"
+          aria-label="Secciones del panel"
+          aria-hidden="true"
+          inert
+        >
+          <div class="admin-menu-heading">
+            <strong>ADMINISTRACIÓN</strong>
+            <button id="cerrarMenu" type="button" aria-label="Cerrar menú">
+              ✕
+            </button>
+          </div>
+          <button type="button" data-tab="servicios" aria-pressed="true">
+            Servicios
+          </button>
+          <button type="button" data-tab="barberos" aria-pressed="false">
+            Barberos
+          </button>
+          <button type="button" data-tab="horarios" aria-pressed="false">
+            Horarios
+          </button>
+          <button type="button" data-tab="ausencias" aria-pressed="false">
+            Ausencias
+          </button>
+          <button type="button" data-tab="reservas" aria-pressed="false">
+            Reservas
+          </button>
+          <button type="button" data-tab="recordatorios" aria-pressed="false">
+            Recordatorios
+          </button>
+          <button type="button" data-tab="frecuentes" aria-pressed="false">
+            Clientes frecuentes
+          </button>
+          <button type="button" data-tab="reportes" aria-pressed="false">
+            Reportes
+          </button>
         </nav>
 
         <!-- 04 | SERVICIOS: agregar, editar, cambiar precios y activar/desactivar -->

@@ -7,6 +7,9 @@ const COOKIE = "cr_admin_session";
 const TTL = 6 * 60 * 60 * 1000;
 const ACTIONS = new Set([
   "getPanel",
+  "getCRM",
+  "marcarRecordatorio",
+  "guardarTelefonoBarbero",
   "guardarServicio",
   "guardarBarbero",
   "asignarServicio",
@@ -17,6 +20,9 @@ const ACTIONS = new Set([
 ]);
 const ARG_COUNT = {
   getPanel: 0,
+  getCRM: 0,
+  marcarRecordatorio: 2,
+  guardarTelefonoBarbero: 2,
   guardarServicio: 1,
   guardarBarbero: 1,
   asignarServicio: 3,
