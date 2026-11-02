@@ -9,6 +9,7 @@ import {
   FaUsers,
   FaWhatsapp,
   FaTags,
+  FaCrown,
 } from "react-icons/fa";
 
 import {
@@ -23,6 +24,7 @@ import AdminAgenda from "./AdminAgenda";
 import AdminAbsences from "./AdminAbsences";
 import AdminClients from "./AdminClients";
 import AdminServices from "./AdminServices";
+import AdminPlans from "./AdminPlans";
 
 import { inputClass, labelClass, primaryButtonClass } from "./adminShared";
 
@@ -33,6 +35,7 @@ const TABS = [
   { id: "clientes", label: "Clientes y reportes", icon: FaUsers },
   { id: "recordatorios", label: "Recordatorios", icon: FaWhatsapp },
   { id: "servicios", label: "Servicios y precios", icon: FaTags },
+  { id: "planes", label: "Planes mensuales", icon: FaCrown },
 ];
 
 function AdminLogin({ onSuccess }) {
@@ -205,6 +208,7 @@ export default function AdminPage() {
             {tab === "clientes" && <AdminClients />}
             {tab === "ausencias" && <AdminAbsences />}
             {tab === "servicios" && <AdminServices />}
+            {tab === "planes" && <AdminPlans />}
           </div>
         </div>
       </div>

@@ -140,3 +140,10 @@ export function getAdminServices() {
 export function saveAdminService(service) {
   return adminRequest("adminSaveService", { service });
 }
+
+export function getAdminPlans() {
+  return adminRequest("adminPlans");
+}
+export function cancelAdminPlan(id) {
+  return adminRequest("adminCancelPlan", { id });
+}

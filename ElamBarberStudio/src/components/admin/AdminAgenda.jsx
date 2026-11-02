@@ -26,6 +26,7 @@ export default function AdminAgenda({ remindersOnly = false }) {
   const [error, setError] = useState("");
   const [cancellingId, setCancellingId] = useState("");
   const [savingId, setSavingId] = useState("");
+  const [typeFilter, setTypeFilter] = useState("todos");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,7 +81,10 @@ export default function AdminAgenda({ remindersOnly = false }) {
     }
   };
   const appointments = (data?.appointments || []).filter(
-    (item) => item.status !== "Cancelado",
+    (item) =>
+      item.status !== "Cancelado" &&
+      (typeFilter === "todos" ||
+        (typeFilter === "planes" ? item.isPlanVisit : !item.isPlanVisit)),
   );
 
   const absences = data?.absences || [];
@@ -90,6 +94,24 @@ export default function AdminAgenda({ remindersOnly = false }) {
       <h2 className="text-2xl font-semibold">
         {remindersOnly ? "Recordatorios por WhatsApp" : "Agenda del día"}
       </h2>
+      {!remindersOnly && (
+        <div className="my-4 flex flex-wrap gap-2">
+          {[
+            ["todos", "Todos"],
+            ["cortes", "Servicios individuales"],
+            ["planes", "Visitas de planes"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setTypeFilter(value)}
+              className={`rounded-xl border px-3 py-2 text-sm ${typeFilter === value ? "border-[#DDC88A] bg-[#DDC88A] text-black" : "border-white/20 text-white"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* SELECTOR DE DÍA */}
       <div className="mt-6 flex items-center gap-3">
