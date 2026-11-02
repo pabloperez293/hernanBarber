@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaClock, FaScissors } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
-import { SERVICES_MOCK } from "../../data/mockData";
+import { getServices } from "../../utils/bookingApi";
 
 const FILTERS = [
   { id: "cabello", label: "Cabello" },
@@ -20,17 +20,28 @@ const formatPrice = (price) => {
 export default function Services() {
   const navigate = useNavigate();
 
-  const [activeFilter, setActiveFilter] = useState(
-    FILTERS[0].id
-  );
+  const [activeFilter, setActiveFilter] = useState(FILTERS[0].id);
 
-  const services = SERVICES_MOCK;
+  const [services, setServices] = useState([]);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let mounted = true;
+    getServices()
+      .then((data) => {
+        if (mounted) setServices(data);
+      })
+      .catch((err) => {
+        if (mounted) setError(err.message);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredServices = useMemo(() => {
     return services.filter(
       (service) =>
-        service.category?.toLowerCase() ===
-        activeFilter.toLowerCase()
+        service.category?.toLowerCase() === activeFilter.toLowerCase(),
     );
   }, [services, activeFilter]);
 
@@ -39,10 +50,7 @@ export default function Services() {
   };
 
   return (
-    <section
-      id="servicios"
-      className="bg-[#0B0B0B] px-6 py-24 text-white"
-    >
+    <section id="servicios" className="bg-[#0B0B0B] px-6 py-24 text-white">
       <div className="mx-auto max-w-7xl">
         {/* HEADER */}
         <div className="mx-auto max-w-2xl text-center">
@@ -55,11 +63,16 @@ export default function Services() {
           </h2>
 
           <p className="mt-5 text-sm leading-7 text-white/60 sm:text-base">
-            Encontrá el servicio que mejor se adapte a vos y reservá tu turno
-            de forma simple.
+            Encontrá el servicio que mejor se adapte a vos y reservá tu turno de
+            forma simple.
           </p>
         </div>
 
+        {error && (
+          <p role="alert" className="text-center text-red-300">
+            {error}
+          </p>
+        )}
         {/* FILTROS */}
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {FILTERS.map((filter) => {
@@ -120,9 +133,7 @@ export default function Services() {
               </div>
 
               {/* INFORMACIÓN */}
-              <h3 className="mt-6 text-xl font-semibold">
-                {service.name}
-              </h3>
+              <h3 className="mt-6 text-xl font-semibold">{service.name}</h3>
 
               <p className="mt-2 min-h-[48px] text-sm leading-6 text-white/50">
                 {service.description}
@@ -176,4 +187,3 @@ export default function Services() {
     </section>
   );
 }
-

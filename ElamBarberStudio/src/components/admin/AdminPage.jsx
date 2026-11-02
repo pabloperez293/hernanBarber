@@ -6,6 +6,8 @@ import {
   FaLock,
   FaSignOutAlt,
   FaUserClock,
+  FaUsers,
+  FaWhatsapp,
 } from "react-icons/fa";
 
 import {
@@ -18,6 +20,7 @@ import {
 import AdminStats from "./AdminStats";
 import AdminAgenda from "./AdminAgenda";
 import AdminAbsences from "./AdminAbsences";
+import AdminClients from "./AdminClients";
 
 import { inputClass, labelClass, primaryButtonClass } from "./adminShared";
 
@@ -25,6 +28,8 @@ const TABS = [
   { id: "resumen", label: "Resumen", icon: FaChartBar },
   { id: "agenda", label: "Agenda", icon: FaCalendarDay },
   { id: "ausencias", label: "Ausencias", icon: FaUserClock },
+  { id: "clientes", label: "Clientes y reportes", icon: FaUsers },
+  { id: "recordatorios", label: "Recordatorios", icon: FaWhatsapp },
 ];
 
 function AdminLogin({ onSuccess }) {
@@ -114,8 +119,7 @@ export default function AdminPage() {
 
     window.addEventListener(ADMIN_LOGOUT_EVENT, handleLogout);
 
-    return () =>
-      window.removeEventListener(ADMIN_LOGOUT_EVENT, handleLogout);
+    return () => window.removeEventListener(ADMIN_LOGOUT_EVENT, handleLogout);
   }, []);
 
   // El panel no debe aparecer en buscadores.
@@ -194,6 +198,8 @@ export default function AdminPage() {
           <div className="p-5 sm:p-8">
             {tab === "resumen" && <AdminStats />}
             {tab === "agenda" && <AdminAgenda />}
+            {tab === "recordatorios" && <AdminAgenda remindersOnly />}
+            {tab === "clientes" && <AdminClients />}
             {tab === "ausencias" && <AdminAbsences />}
           </div>
         </div>

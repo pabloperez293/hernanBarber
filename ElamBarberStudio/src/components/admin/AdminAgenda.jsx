@@ -2,7 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { FaChevronLeft, FaChevronRight, FaWhatsapp } from "react-icons/fa";
 
-import { cancelAppointment, getAgenda } from "../../utils/adminApi";
+import {
+  cancelAppointment,
+  getAgenda,
+  updateClient,
+  markReminder,
+} from "../../utils/adminApi";
 import { formatDateLocal } from "../../utils/bookingUtils";
 
 import {
@@ -14,12 +19,13 @@ import {
   whatsappLink,
 } from "./adminShared";
 
-export default function AdminAgenda() {
+export default function AdminAgenda({ remindersOnly = false }) {
   const [date, setDate] = useState(() => formatDateLocal(new Date()));
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cancellingId, setCancellingId] = useState("");
+  const [savingId, setSavingId] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -44,7 +50,7 @@ export default function AdminAgenda() {
     if (cancellingId) return;
 
     const confirmed = window.confirm(
-      `¿Cancelar el turno de ${appointment.clientName} a las ${appointment.startTime}? El horario quedará libre.`
+      `¿Cancelar el turno de ${appointment.clientName} a las ${appointment.startTime}? El horario quedará libre.`,
     );
 
     if (!confirmed) return;
@@ -61,15 +67,29 @@ export default function AdminAgenda() {
     }
   };
 
+  const saveClient = async (row, changes) => {
+    setSavingId(row.id);
+    setError("");
+    try {
+      await updateClient(row.id, changes);
+      await load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingId("");
+    }
+  };
   const appointments = (data?.appointments || []).filter(
-    (item) => item.status !== "Cancelado"
+    (item) => item.status !== "Cancelado",
   );
 
   const absences = data?.absences || [];
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold">Agenda del día</h2>
+      <h2 className="text-2xl font-semibold">
+        {remindersOnly ? "Recordatorios por WhatsApp" : "Agenda del día"}
+      </h2>
 
       {/* SELECTOR DE DÍA */}
       <div className="mt-6 flex items-center gap-3">
@@ -119,11 +139,11 @@ export default function AdminAgenda() {
         >
           {BARBER_NAMES.map((barber) => {
             const barberAppointments = appointments.filter(
-              (item) => item.barberName === barber
+              (item) => item.barberName === barber,
             );
 
             const barberAbsences = absences.filter(
-              (item) => item.barberName === barber
+              (item) => item.barberName === barber,
             );
 
             const rows = [
@@ -206,18 +226,111 @@ export default function AdminAgenda() {
                             </div>
                           </div>
 
-                          <button
-                            type="button"
-                            disabled={cancellingId === row.id}
-                            onClick={() => handleCancel(row)}
-                            className="mt-3 text-xs text-white/40 transition-colors hover:text-red-300 disabled:opacity-40"
-                          >
-                            {cancellingId === row.id
-                              ? "Cancelando..."
-                              : "Cancelar turno"}
-                          </button>
+                          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                            <span
+                              className={`rounded-full px-2 py-1 ${row.isNewClient ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-white/60"}`}
+                            >
+                              {row.isNewClient
+                                ? "Cliente nuevo"
+                                : "Cliente recurrente"}
+                            </span>
+                            {row.promotion && (
+                              <span className="rounded-full bg-[#DDC88A]/20 px-2 py-1 text-[#DDC88A]">
+                                Promo: {row.promotion}
+                              </span>
+                            )}
+                            {row.reminderSentAt && (
+                              <span className="text-emerald-300">
+                                Recordatorio registrado
+                              </span>
+                            )}
+                          </div>
+                          {!remindersOnly && (
+                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                              <label className="text-xs text-white/60">
+                                Clasificación
+                                <select
+                                  disabled={savingId === row.id}
+                                  className="ml-2 rounded bg-[#222] p-2"
+                                  value={
+                                    row.clientType ||
+                                    (row.isNewClient ? "Nuevo" : "Recurrente")
+                                  }
+                                  onChange={(e) =>
+                                    saveClient(row, {
+                                      clientType: e.target.value,
+                                    })
+                                  }
+                                >
+                                  <option>Nuevo</option>
+                                  <option>Recurrente</option>
+                                </select>
+                              </label>
+                              <label className="text-xs text-white/60">
+                                Promoción
+                                <input
+                                  className="ml-2 w-28 rounded bg-[#222] p-2"
+                                  key={row.id + row.promotion}
+                                  defaultValue={row.promotion || ""}
+                                  placeholder="Sin promo"
+                                  onBlur={(e) => {
+                                    if (
+                                      e.target.value.trim() !==
+                                      (row.promotion || "")
+                                    )
+                                      saveClient(row, {
+                                        promotion: e.target.value.trim(),
+                                      });
+                                  }}
+                                />
+                              </label>
+                            </div>
+                          )}
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <a
+                              href={whatsappLink(
+                                row.clientPhone,
+                                `Hola ${row.clientName}, te recordamos tu turno en Elam Barber Studio el ${row.date} a las ${row.startTime} con ${row.barberName}. ¡Te esperamos!`,
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-lg border border-emerald-500/40 px-3 py-2 text-xs text-emerald-300"
+                            >
+                              Abrir recordatorio WhatsApp
+                            </a>
+                            <button
+                              type="button"
+                              disabled={savingId === row.id}
+                              onClick={async () => {
+                                setSavingId(row.id);
+                                try {
+                                  await markReminder(row.id);
+                                  await load();
+                                } catch (err) {
+                                  setError(err.message);
+                                } finally {
+                                  setSavingId("");
+                                }
+                              }}
+                              className="rounded-lg border border-white/20 px-3 py-2 text-xs"
+                            >
+                              Marcar enviado
+                            </button>
+                          </div>
+                          {!remindersOnly && (
+                            <button
+                              type="button"
+                              disabled={cancellingId === row.id}
+                              onClick={() => handleCancel(row)}
+                              className="mt-3 text-xs text-white/40 transition-colors hover:text-red-300 disabled:opacity-40"
+                            >
+                              {cancellingId === row.id
+                                ? "Cancelando..."
+                                : "Cancelar turno"}
+                            </button>
+                          )}
                         </li>
-                      )
+                      ),
                     )}
                   </ul>
                 )}
@@ -229,4 +342,3 @@ export default function AdminAgenda() {
     </div>
   );
 }
-

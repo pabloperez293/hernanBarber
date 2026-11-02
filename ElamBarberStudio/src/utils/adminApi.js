@@ -1,5 +1,4 @@
-const GOOGLE_SCRIPT_URL =
-  import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
 
 const GOOGLE_API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
 
@@ -39,16 +38,14 @@ function clearToken() {
 async function adminRequest(action, payload = {}, { auth = true } = {}) {
   if (!GOOGLE_SCRIPT_URL) {
     throw new Error(
-      "El sistema de reservas no está configurado correctamente."
+      "El sistema de reservas no está configurado correctamente.",
     );
   }
 
   const url = new URL(GOOGLE_API_URL, window.location.origin);
   url.searchParams.set("action", action);
 
-  const body = auth
-    ? { ...payload, token: getStoredToken() }
-    : payload;
+  const body = auth ? { ...payload, token: getStoredToken() } : payload;
 
   let result;
 
@@ -69,9 +66,7 @@ async function adminRequest(action, payload = {}, { auth = true } = {}) {
   } catch (error) {
     console.error("Error en acción admin:", action, error);
 
-    throw new Error(
-      "No se pudo conectar con el servidor. Intentá nuevamente."
-    );
+    throw new Error("No se pudo conectar con el servidor. Intentá nuevamente.");
   }
 
   if (!result.success) {
@@ -85,9 +80,7 @@ async function adminRequest(action, payload = {}, { auth = true } = {}) {
       return result;
     }
 
-    throw new Error(
-      result.message || "No se pudo completar la acción."
-    );
+    throw new Error(result.message || "No se pudo completar la acción.");
   }
 
   return result;
@@ -97,7 +90,7 @@ export async function adminLogin(password) {
   const result = await adminRequest(
     "adminLogin",
     { password },
-    { auth: false }
+    { auth: false },
   );
 
   storeToken(result.token);
@@ -129,4 +122,21 @@ export function createAbsence(absence) {
 
 export function deleteAbsence(id) {
   return adminRequest("adminDeleteAbsence", { id });
+}
+
+export function updateClient(id, changes) {
+  return adminRequest("adminUpdateClient", { id, ...changes });
+}
+export function getClientReport({ from, to }) {
+  return adminRequest("adminClientReport", { from, to });
+}
+export function markReminder(id) {
+  return adminRequest("adminMarkReminder", { id });
+}
+
+export function getAdminServices() {
+  return adminRequest("adminServices");
+}
+export function saveAdminService(service) {
+  return adminRequest("adminSaveService", { service });
 }

@@ -1,25 +1,19 @@
 import { BARBERS_MOCK, SERVICES_MOCK } from "../data/mockData";
 
-
-const GOOGLE_SCRIPT_URL = (
-  import.meta.env.VITE_GOOGLE_SCRIPT_URL || ""
-).trim();
+const GOOGLE_SCRIPT_URL = (import.meta.env.VITE_GOOGLE_SCRIPT_URL || "").trim();
 
 const GOOGLE_API_URL = GOOGLE_SCRIPT_URL;
 
 function ensureGoogleScriptConfigured() {
   if (
-    !GOOGLE_SCRIPT_URL.startsWith(
-      "https://script.google.com/macros/s/"
-    ) ||
+    !GOOGLE_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") ||
     !GOOGLE_SCRIPT_URL.endsWith("/exec")
   ) {
     throw new Error(
-      "La URL de Google Apps Script no es válida. Revisá VITE_GOOGLE_SCRIPT_URL en el archivo .env."
+      "La URL de Google Apps Script no es válida. Revisá VITE_GOOGLE_SCRIPT_URL en el archivo .env.",
     );
   }
 }
-
 
 function timeToMinutes(time) {
   if (!time) return 0;
@@ -37,66 +31,52 @@ function intervalsOverlap(startA, endA, startB, endB) {
 }
 
 export async function getServices() {
-  return SERVICES_MOCK;
+  ensureGoogleScriptConfigured();
+  const url = new URL(GOOGLE_API_URL);
+  url.searchParams.set("action", "services");
+  url.searchParams.set("_cache", String(Date.now()));
+  const response = await fetch(url.toString(), { cache: "no-store" });
+  if (!response.ok) throw new Error("No se pudieron cargar los servicios.");
+  const result = await response.json();
+  if (!result.success || !Array.isArray(result.services))
+    throw new Error(result.message || "Servicios no disponibles.");
+  return result.services.filter((s) => s.active !== false);
 }
 
 export async function getBarbers() {
   return BARBERS_MOCK;
 }
 
-export async function getAvailability({
-  date,
-  serviceId,
-  serviceDuration,
-}) {
+export async function getAvailability({ date, serviceId, serviceDuration }) {
   ensureGoogleScriptConfigured();
 
-  const url = new URL(
-  GOOGLE_API_URL,
-  window.location.origin
-);
+  const url = new URL(GOOGLE_API_URL, window.location.origin);
 
   url.searchParams.set("action", "availability");
-url.searchParams.set("date", date);
-url.searchParams.set(
-  "serviceId",
-  String(serviceId)
-);
-url.searchParams.set(
-  "serviceDuration",
-  String(serviceDuration)
-);
-url.searchParams.set(
-  "_cache",
-  String(Date.now())
-);
+  url.searchParams.set("date", date);
+  url.searchParams.set("serviceId", String(serviceId));
+  url.searchParams.set("serviceDuration", String(serviceDuration));
+  url.searchParams.set("_cache", String(Date.now()));
 
   try {
     const response = await fetch(url.toString());
 
     if (!response.ok) {
-      throw new Error(
-        "No se pudo consultar la disponibilidad."
-      );
+      throw new Error("No se pudo consultar la disponibilidad.");
     }
 
     const result = await response.json();
 
     if (!result || typeof result !== "object") {
-      throw new Error(
-        "La respuesta de disponibilidad no es válida."
-      );
+      throw new Error("La respuesta de disponibilidad no es válida.");
     }
 
     return result;
   } catch (error) {
-    console.error(
-      "Error consultando disponibilidad:",
-      error
-    );
+    console.error("Error consultando disponibilidad:", error);
 
     throw new Error(
-      "No se pudo consultar la disponibilidad. Intentá nuevamente."
+      "No se pudo consultar la disponibilidad. Intentá nuevamente.",
     );
   }
 }
@@ -104,10 +84,7 @@ url.searchParams.set(
 export async function createAppointment(appointment) {
   ensureGoogleScriptConfigured();
 
-  const url = new URL(
-  GOOGLE_API_URL,
-  window.location.origin
-);
+  const url = new URL(GOOGLE_API_URL, window.location.origin);
 
   url.searchParams.set("action", "createAppointment");
 
@@ -121,26 +98,18 @@ export async function createAppointment(appointment) {
     });
 
     if (!response.ok) {
-      throw new Error(
-        "No se pudo registrar la reserva."
-      );
+      throw new Error("No se pudo registrar la reserva.");
     }
 
     const result = await response.json();
 
     if (!result.success) {
-      throw new Error(
-        result.message ||
-          "La reserva no pudo ser registrada."
-      );
+      throw new Error(result.message || "La reserva no pudo ser registrada.");
     }
 
     return result;
   } catch (error) {
-    console.error(
-      "Error registrando reserva:",
-      error
-    );
+    console.error("Error registrando reserva:", error);
 
     if (
       error instanceof Error &&
@@ -150,9 +119,7 @@ export async function createAppointment(appointment) {
       throw error;
     }
 
-    throw new Error(
-      "No se pudo registrar la reserva. Intentá nuevamente."
-    );
+    throw new Error("No se pudo registrar la reserva. Intentá nuevamente.");
   }
 }
 
@@ -169,7 +136,7 @@ export function isBarberAvailable({
         startTime,
         endTime,
         reservation.startTime,
-        reservation.endTime
-      )
+        reservation.endTime,
+      ),
   );
 }
